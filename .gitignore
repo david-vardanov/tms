@@ -1,0 +1,31 @@
+# exclude node_modules directory
+node_modules/
+
+# exclude any logs, backup or cache files
+logs/
+*.log
+*.backup
+*.cache
+
+# exclude environment variables files
+.env
+*.env.local
+*.env.*.local
+!*.env.example
+
+# exclude editor specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.tmproj
+
+# exclude distribution or build files
+dist/
+build/
+out/
+target/
+*.egg-info/
+*.egg/
+*.pyc
+*.class

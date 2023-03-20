@@ -1,0 +1,38 @@
+<% layout('layout.ejs') %>
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-6">
+      <h3>Our Location</h3>
+        <div class="map-responsive">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d897.0429558488302!2d-80.12725109398117!3d25.929582405142632!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9ad1a26575647%3A0x4760f50389544e1d!2s323%20Sunny%20Isles%20Blvd%207th%20Floor%2C%20Sunny%20Isles%20Beach%2C%20FL%2033160%2C%20USA!5e0!3m2!1sen!2sam!4v1679240415060!5m2!1sen!2sam" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+    <div class="col-md-6">
+      <h3>About AGD Logistics</h3>
+      <p>AGD Logistics is a full-service logistics company based in Sunny Isles Beach, Florida. We specialize in providing personalized transportation and logistics solutions to businesses of all sizes. Our team of experienced professionals is committed to providing exceptional customer service and helping our clients navigate the complex world of logistics.</p>
+      <p>If you have any questions or would like to learn more about our services, please don't hesitate to get in touch with us using the form below or by emailing us at <a href="mailto:info@agdlogistics.com">info@agdlogistics.com</a>.</p>
+      <div class="mt-4">
+        <p><strong>AGD Logistics, LLC</strong></p>
+        <p>323 Sunny Isles Boulevard 7th Floor, Sunny Isles Beach, FL 33160</p>
+        <p><a href="mailto:info@agdlogistics.com">info@agdlogistics.com</a></p>
+        <p><a href="tel:+17862755040">(786) 275-5040</a></p>
+      </div>
+      <form class="mt-4">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" id="name" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" class="form-control" id="email" required>
+        </div>
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea class="form-control" id="message" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
