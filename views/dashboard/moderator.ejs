@@ -1,0 +1,64 @@
+
+
+<div class="container mt-5">
+    <div class="row">
+      <div class="col-md-6">
+        <h2>Invites</h2>
+        <% invites.forEach(invite => { %>
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-5">
+                  <strong>MC Number:</strong> <%= invite.mcNumber %>
+                  <strong>Email:</strong> <%= invite.email %>
+                </div>
+                <div class="col-md-6"> 
+                  <div class="row">
+                    <div class="col-md-4">
+                      <button class="btn btn-primary">View</button>
+                    </div>
+                    <div class="col-md-4">
+                      <button class="btn btn-danger">Revoke</button>
+                    </div>
+                    <div class="col-md-4">
+                      <button class="btn btn-info">Resend</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-2">
+                
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+  
+      <div class="col-md-6">
+        <h2>Carriers In Moderation</h2>
+        <% carriers.forEach(carrier => { %>
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <strong>MC Number:</strong> <%= carrier.mcNumber %>
+                </div>
+                <div class="col-md-6">
+                  <strong>Carrier Name:</strong> <%= carrier.name %>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-md-6">
+                  <button class="btn btn-primary">Moderate</button>
+                </div>
+                <div class="col-md-6">
+                  <button class="btn btn-danger">Decline</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+  

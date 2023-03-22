@@ -18,6 +18,30 @@ const businessSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  address: {
+    type: String,
+    trim: true,
+  },
+  address2: {
+    type: String,
+    trim: true,
+  },
+  zip: {
+    type: String,
+    trim: true,
+  },
+  state: {
+    type: String,
+    trim: true,
+  },
+  city: {
+    type: String,
+    trim: true,
+  },
+  phone: {
+    type: String,
+    trim: true,
+  },
   einNumber: {
     type: String,
     trim: true,
@@ -28,7 +52,7 @@ const businessSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Active', 'Inactive', 'Deactivated', 'Pending'],
+    enum: ['Active', 'Inactive', 'Deactivated', 'Pending', 'inModeration'],
     default: 'Inactive',
     required: true,
   },
@@ -36,6 +60,4 @@ const businessSchema = new mongoose.Schema({
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });
 
-const Business = mongoose.model('Business', businessSchema);
-
-module.exports = Business;
+module.exports = businessSchema;

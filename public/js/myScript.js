@@ -55,20 +55,75 @@ $('#testimonials').carousel();
 
 
 
+function showFlashMessage(flashType, message) {
+  const flashElement = $(`
+    <div class="alert alert-${flashType} alert-dismissible fade show" role="alert">
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  `);
+  $('#flash-messages-container').append(flashElement);
 
-// Add this to your JavaScript file
-$('#generate-invite-form').on('submit', function (e) {
-  e.preventDefault();
+  // Add fade-out animation after a short delay
+  setTimeout(() => {
+    flashElement.alert('close');
+  }, 15000);
+}
 
-  const mcNumber = $('#mc-number-input').val();
 
-  $.post('/generate-invite-link', { mcNumber }, function (response) {
-    if (response.error) {
-      // Handle error, e.g., display an error message
-      console.error(response.error);
-    } else {
-      // Display the invite URL in the div
-      $('#invite-link-container').html(`<a href="${response.inviteUrl}" target="_blank">${response.inviteUrl}</a>`);
+$('#generate-invite-form').submit((event) => {
+  event.preventDefault();
+  const formArray = $('#generate-invite-form').serializeArray();
+  const formData = formArray.reduce((acc, { name, value }) => {
+    acc[name] = value;
+    return acc;
+  }, {});
+
+  $.ajax({
+    url: '/invites/generate-invite-link',
+    method: 'POST',
+    data: formData,
+    dataType: 'json',
+    success: (response) => {
+      
+      const inviteUrl = response.inviteUrl;
+      $('#invite-url-preview').html(`
+        <p>Invitation link:</p>
+        <a href="${inviteUrl}">${inviteUrl}</a> 
+      `);
+      showFlashMessage(response.flashType, response.message);
+    },
+    error: (error) => {
+      console.error(error);
+      if (error.responseJSON) {
+        showFlashMessage(error.responseJSON.flashType, error.responseJSON.message);
+      } else {
+        showFlashMessage('error', 'An unexpected error occurred.');
+      }
     }
   });
 });
+
+// $(document).ready(() => {
+//   $('#carrier-setup-form').submit((event) => {
+//     event.preventDefault();
+//     const formData = $('#carrier-setup-form').serialize();
+//     $.ajax({
+//       url: '/carriers/submit-carrier-setup',
+//       method: 'POST',
+//       data: formData,
+//       dataType: 'json',
+//       success: (response) => {
+//         if (response.success) {
+//           alert('Carrier setup completed successfully.')
+
+//         } else {
+//           alert('An error occurred: ' + response.error);
+//         }
+//       },
+//       error: (error) => {
+//         console.error(error);
+//       }
+//     });
+//   });
+// });
