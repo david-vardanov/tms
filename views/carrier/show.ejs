@@ -1,0 +1,19 @@
+
+  
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title">Carrier Name</h5>
+    
+  </div>
+  <div class="card-body">
+    <!-- Add the content here -->
+  </div>
+  <div class="card-footer text-muted">
+    
+    <% if (carrier.status === 'inModeration') { %>
+      <button class="btn btn-primary btn-sm">Moderate</button>
+    <% } %>
+    <button class="btn btn-secondary btn-sm">Close</button>
+    <button class="btn btn-secondary btn-sm">Edit</button>
+  </div>
+</div>

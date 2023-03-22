@@ -37,7 +37,7 @@ router.post('/generate-invite-link', async (req, res) => {
       { expiresIn: '2h' }
     );
     const inviteUrl = `${req.protocol}://${req.get('host')}/carriers/carrier-setup?token=${inviteToken}`;
-sendEmail(email, "hello axper", "arachin emailna")
+sendEmail(email, "hello axper", "arachin emailna");
     // Add a success flash message and redirect to the carrier setup page
     return res.status(200).json({
       flashType: 'success',
@@ -47,6 +47,32 @@ sendEmail(email, "hello axper", "arachin emailna")
   }
 });
 
+
+
+router.post('/:id/revoke', async (req, res) => {
+  try {
+    const invite = await Invite.findById(req.params.id);
+
+    if (!invite) {
+      return res.status(404).send('Invite not found');
+    }
+
+    // Confirm with user if they want to revoke the invite
+    const confirmed = await confirmRevoke(req.body.mcNumber);
+
+    if (confirmed) {
+      invite.isExpired = true;
+      await invite.save();
+      res.redirect('/invites');
+    } else {
+      // Do nothing if the user did not confirm
+      res.redirect('back');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 module.exports = router;
 

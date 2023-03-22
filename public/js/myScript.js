@@ -104,6 +104,41 @@ $('#generate-invite-form').submit((event) => {
   });
 });
 
+$('.view-button').click(function() {
+  var id = $(this).data('id'); // Get the ID of the carrier from the data attribute
+  $.get('/carriers/' + id, function(data) { // Make a GET request to the server to get the carrier data
+    console.log(id);
+    $('#carrier-popup .modal-body').html(data); // Update the popup's body with the carrier/show.ejs template
+    $('#carrier-popup').modal('show'); // Show the popup
+  });
+});
+
+
+
+
+
+$('.revoke-button').click(function() {
+  
+
+  var id = $(this).data('id'); // Get the ID of the invite from the data attribute
+
+    // User confirmed the revocation, make a POST request to the server
+    $.post('/invites/' + id + '/revoke', function(data) {
+      $('#confirm-revoke-modal').modal('show'); // Show the confirmation modal
+      // Success! Update the UI to indicate that the invite has been revoked
+      $('#invite-' + id + ' .status').text('Revoked');
+      $('#invite-' + id + ' .revoke-button').prop('disabled', true);
+      
+    }).fail(function() {
+      // Oops, something went wrong
+      alert('Failed to revoke the invite');
+      $('#confirm-revoke-modal').modal('hide');
+    });
+  });
+
+
+
+
 // $(document).ready(() => {
 //   $('#carrier-setup-form').submit((event) => {
 //     event.preventDefault();

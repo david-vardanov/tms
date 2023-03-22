@@ -72,6 +72,15 @@ res.render('setupComplete', {
   //description: 'AGD Logistics is a premier freight brokerage company in the United States, specializing in Full Truckload (FTL), Less Than Truckload (LTL), and Partial Load transportation services. Founded on April 21, 2020, we provide tailored solutions to meet your specific shipping needs, ensuring a seamless and efficient shipping experience. Choose AGD Logistics as your trusted partner for all your freight brokerage needs.'
 });
 });
-  
+
+router.get('/:id', async (req, res) => {
+  try {
+    const carrier = await Carrier.findById(req.params.id);
+    res.render('carrier/show', { carrier });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
+});
 
 module.exports = router;

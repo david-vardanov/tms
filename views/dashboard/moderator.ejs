@@ -1,5 +1,3 @@
-
-
 <div class="container mt-5">
     <div class="row">
       <div class="col-md-6">
@@ -18,7 +16,8 @@
                       <button class="btn btn-primary">View</button>
                     </div>
                     <div class="col-md-4">
-                      <button class="btn btn-danger">Revoke</button>
+                        <button class="btn btn-danger revoke-button" data-id="<%= invite._id %>">Revoke</button>
+
                     </div>
                     <div class="col-md-4">
                       <button class="btn btn-info">Resend</button>
@@ -27,13 +26,54 @@
                 </div>
               </div>
               <div class="row mt-2">
-                
               </div>
             </div>
           </div>
         <% }) %>
       </div>
+
+      <!-- Confirmation Modal -->
+<div class="modal fade" id="revoke-confirm-modal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmationModalLabel">Confirm Revoke</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to revoke this invite? This action cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="revoke-confirm-btn">Revoke</button>
+        </div>
+      </div>
+    </div>
+  </div>
   
+      <div class="modal fade" id="carrier-popup" tabindex="-1" role="dialog" aria-labelledby="carrier-popup-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="carrier-popup-label">Carrier Details</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <!-- Carrier details will be inserted here -->
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Edit</button>
+              <!-- Add the "Moderate" button here if needed -->
+              
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="col-md-6">
         <h2>Carriers In Moderation</h2>
         <% carriers.forEach(carrier => { %>
@@ -49,7 +89,8 @@
               </div>
               <div class="row mt-2">
                 <div class="col-md-6">
-                  <button class="btn btn-primary">Moderate</button>
+                  <button class="view-button" data-id="<%=carrier._id %>">View</button>
+
                 </div>
                 <div class="col-md-6">
                   <button class="btn btn-danger">Decline</button>

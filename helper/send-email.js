@@ -1,30 +1,37 @@
 const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
 require('dotenv').config();
 
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
+
 async function sendEmail(to, subject, text) {
-  // Replace these with your G Suite email and generated app password
-  const userEmail = process.env.USER_EMAIL;
-  const appPassword = process.env.APP_PASSWORD;
+  const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, "urn:ietf:wg:oauth:2.0:oob");
+  oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
-  // Create a transporter object
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: userEmail,
-      pass: appPassword,
-    },
-  });
-
-  // Define the email options
-  const mailOptions = {
-    from: userEmail,
-    to,
-    subject,
-    text,
-  };
-
-  // Send the email using the transporter
   try {
+    const accessToken = await oAuth2Client.getAccessToken();
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: process.env.USER_EMAIL,
+        clientId: CLIENT_ID,
+        clientSecret: CLIENT_SECRET,
+        refreshToken: REFRESH_TOKEN,
+        accessToken: accessToken.token,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.USER_EMAIL,
+      to,
+      subject,
+      text,
+    };
+
     const result = await transporter.sendMail(mailOptions);
     console.log("Email sent:", result.messageId);
   } catch (error) {
@@ -32,6 +39,4 @@ async function sendEmail(to, subject, text) {
   }
 }
 
-// Usage example
-//sendEmail("recipient@example.com", "Test Subject", "Hello, this is a test email!");
 module.exports = sendEmail;

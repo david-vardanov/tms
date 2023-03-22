@@ -15,6 +15,10 @@ const inviteSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  isExpired: {
+    type: Boolean,
+    default: false,
+  },
 }, { timestamps: true });
 
 const Invite = mongoose.model('Invite', inviteSchema);
