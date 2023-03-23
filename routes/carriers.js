@@ -6,11 +6,30 @@ const Carrier = require('../models/carrier');
 const Invite = require('../models/invite');
 const Business = require('../models/business');
 const User = require('../models/user');
+const Document = require('../models/document');
 const paginate = require('express-paginate');
 const multer = require('multer');
 const storage = require('../storage');
 
+
+
+// Create a storage configuration for multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const carrierMcDir = path.join(__dirname, '..', 'docs', 'carrierMc', req.body.mcNumber);
+    // Create a directory for the specific carrier if it does not exist
+    if (!fs.existsSync(carrierMcDir)) {
+      fs.mkdirSync(carrierMcDir, { recursive: true });
+    }
+    cb(null, carrierMcDir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, 'document' + path.extname(file.originalname));
+  },
+});
+
 const upload = multer({ storage });
+
 
 // Other routes...
 
@@ -32,8 +51,8 @@ router.get('/carrier-setup', async (req, res) => {
 });
 
 // POST route for the carrier setup form submission
-router.post('/submit-carrier-setup', async (req, res) => {
-  const { mcNumber, token, email, name, phone, address, address2, city, state, zip, einNumber, dotNumber } = req.body;
+router.post('/submit-carrier-setup', upload.single('document'), async (req, res) => {
+  const { mcNumber, token, email, name, phone, address, address2, city, state, zip, einNumber, dotNumber, documentType, documentExpirationDate } = req.body;
 
   try {
     const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
@@ -61,8 +80,22 @@ router.post('/submit-carrier-setup', async (req, res) => {
       status: "inModeration",
     });
 
+    // Save the new Carrier object
     await newCarrier.save();
-    res.render('setupComplete', {user: req.user, carrier: newCarrier, title: "Setup Complete"})
+
+    // Save the uploaded document as a new Document object
+    if (req.file) {
+      const newDocument = new Document({
+        carrier: newCarrier._id,
+        type: documentType,
+        path: path.join('carrierMc', mcNumber, req.file.filename),
+        expirationDate: documentExpirationDate ? new Date(documentExpirationDate) : null,
+      });
+
+      await newDocument.save();
+    }
+
+    res.render('setupComplete', { user: req.user, carrier: newCarrier, title: "Setup Complete" })
     // res.json({ success: true, newCarrier });
   } catch (error) {
     console.error(error);
@@ -129,20 +162,6 @@ router.get('/:id', async (req, res) => {
     console.error(err);
     res.status(500).send('Internal server error');
   }
-});
-
-
-// Handle document upload
-router.post('/:id/upload', upload.single('document'), (req, res) => {
-  const carrierId = req.params.id;
-  const documentPath = req.file.path;
-  
-  // Update the carrier document path in the database
-  Carrier.findByIdAndUpdate(carrierId, { $set: { document: documentPath } }, { new: true })
-    .then(carrier => {
-      res.redirect('/carrier/' + carrier._id);
-    })
-    .catch(err => console.log(err));
 });
 
 
