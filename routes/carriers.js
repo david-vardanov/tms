@@ -13,20 +13,7 @@ const storage = require('../storage');
 
 
 
-// Create a storage configuration for multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const carrierMcDir = path.join(__dirname, '..', 'docs', 'carrierMc', req.body.mcNumber);
-    // Create a directory for the specific carrier if it does not exist
-    if (!fs.existsSync(carrierMcDir)) {
-      fs.mkdirSync(carrierMcDir, { recursive: true });
-    }
-    cb(null, carrierMcDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, 'document' + path.extname(file.originalname));
-  },
-});
+
 
 const upload = multer({ storage });
 
@@ -157,13 +144,14 @@ router.get('/list', paginate.middleware(10, 50), async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const carrier = await Carrier.findById(req.params.id);
-    res.render('carrier/show', { carrier });
+    const documents = await Document.find({ carrier: req.params.id });
+console.log(documents);
+    res.render('carrier/show', { carrier, documents });
   } catch (err) {
     console.error(err);
     res.status(500).send('Internal server error');
   }
 });
-
 
 
 module.exports = router;

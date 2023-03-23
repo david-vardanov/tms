@@ -1,15 +1,16 @@
 const multer = require('multer');
-const path = require('path');
 
+// Create a storage configuration for multer
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, 'docs', 'carrierMC'));
+  destination: (req, file, cb) => {
+    const carrierMcDir = path.join(__dirname, '..', 'docs', 'carrierMc', req.body.mcNumber);
+    // Create a directory for the specific carrier if it does not exist
+    if (!fs.existsSync(carrierMcDir)) {
+      fs.mkdirSync(carrierMcDir, { recursive: true });
+    }
+    cb(null, carrierMcDir);
   },
-  filename: function (req, file, cb) {
-    const extname = path.extname(file.originalname);
-    const filename = 'document' + extname;
-    cb(null, filename);
-  }
+  filename: (req, file, cb) => {
+    cb(null, 'document' + path.extname(file.originalname));
+  },
 });
-
-module.exports = storage;
