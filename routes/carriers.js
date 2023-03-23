@@ -6,6 +6,11 @@ const Carrier = require('../models/carrier');
 const Invite = require('../models/invite');
 const Business = require('../models/business');
 const User = require('../models/user');
+const paginate = require('express-paginate');
+const multer = require('multer');
+const storage = require('../storage');
+
+const upload = multer({ storage });
 
 // Other routes...
 
@@ -73,6 +78,49 @@ res.render('setupComplete', {
 });
 });
 
+router.get('/list', paginate.middleware(10, 50), async (req, res) => {
+  if (req.isAuthenticated()) {
+    const { startDate, endDate, isExpired, inModeration } = req.query;
+    
+    const filter = {};
+
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) filter.createdAt.$gte = new Date(startDate);
+      if (endDate) filter.createdAt.$lte = new Date(endDate);
+    }
+
+    if (isExpired !== undefined) {
+      filter.isExpired = isExpired === 'true';
+    }
+
+    if (inModeration !== undefined) {
+      filter.status = inModeration === 'true' ? 'inModeration' : { $ne: 'inModeration' };
+    }
+
+    const [carriersResults] = await Promise.all([
+      Carrier.find(filter).sort({ updatedAt: 'desc' }).limit(req.query.limit).skip(req.skip).lean().exec(),
+    ]);
+
+    const [carriersCount] = await Promise.all([
+      Carrier.countDocuments(filter),
+    ]);
+
+    const pageCountCarriers = Math.ceil(carriersCount / req.query.limit);
+    res.render('carrier/list', {
+      user: req.user,
+      title: "",
+      carriers: carriersResults,
+      pageCountCarriers,
+      pagesCarriers: paginate.getArrayPages(req)(3, pageCountCarriers, req.query.page),
+    });
+  } else {
+    res.render('/', {
+      user: req.user,title: ""
+    });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const carrier = await Carrier.findById(req.params.id);
@@ -82,5 +130,21 @@ router.get('/:id', async (req, res) => {
     res.status(500).send('Internal server error');
   }
 });
+
+
+// Handle document upload
+router.post('/:id/upload', upload.single('document'), (req, res) => {
+  const carrierId = req.params.id;
+  const documentPath = req.file.path;
+  
+  // Update the carrier document path in the database
+  Carrier.findByIdAndUpdate(carrierId, { $set: { document: documentPath } }, { new: true })
+    .then(carrier => {
+      res.redirect('/carrier/' + carrier._id);
+    })
+    .catch(err => console.log(err));
+});
+
+
 
 module.exports = router;

@@ -47,32 +47,22 @@ sendEmail(email, "hello axper", "arachin emailna");
   }
 });
 
-
-
-router.post('/:id/revoke', async (req, res) => {
+router.post('/:id/revoke', async (req, res, next) => {
+  console.log((req.params.id))
   try {
     const invite = await Invite.findById(req.params.id);
-
     if (!invite) {
       return res.status(404).send('Invite not found');
     }
-
-    // Confirm with user if they want to revoke the invite
-    const confirmed = await confirmRevoke(req.body.mcNumber);
-
-    if (confirmed) {
-      invite.isExpired = true;
-      await invite.save();
-      res.redirect('/invites');
-    } else {
-      // Do nothing if the user did not confirm
-      res.redirect('back');
-    }
+    invite.isExpired = true
+    await invite.save();
+    console.log(invite);
+    return res.redirect('/');
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+    next(error);
   }
 });
+
 
 module.exports = router;
 

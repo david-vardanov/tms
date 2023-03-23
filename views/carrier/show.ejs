@@ -1,19 +1,33 @@
 
-  
-<div class="card">
-  <div class="card-header">
-    <h5 class="card-title">Carrier Name</h5>
-    
-  </div>
-  <div class="card-body">
-    <!-- Add the content here -->
-  </div>
-  <div class="card-footer text-muted">
     
     <% if (carrier.status === 'inModeration') { %>
+        <h5><%=carrier.name %> || MC#<%= carrier.mcNumber %></h5>
+        
+        <div class="row my-3">
+          
+          <!-- LEFT -->
+          <div class="col-md-6 border rounded py-3">
+            <ul style="list-style-type: none;">
+            <h6 clas="text-muted">Business details</h6>
+            <li>Phone: <%= carrier.phone %></li>
+            <li>Email: <%= carrier.email %></li>
+            <li>DOT: <%= carrier.dot %></li>
+            <li>EIN: <%= carrier.address %></li>
+            <li>Address: <%= carrier.address %></li>
+            <% if(carrier.address2) {%> <li>Address2: <%= carrier.address2 %></li><% } %>
+            <li>City: <%= carrier.city %></li>
+            <li>State: <%= carrier.state %></li>
+            <li>Zip: <%= carrier.zip %></li>
+          </ul>
+          </div>
+        
+          <!-- RIGHT -->
+          <div class="col-md-6">
+
+          </div>
+        </div>
+        
       <button class="btn btn-primary btn-sm">Moderate</button>
     <% } %>
-    <button class="btn btn-secondary btn-sm">Close</button>
+
     <button class="btn btn-secondary btn-sm">Edit</button>
-  </div>
-</div>

@@ -115,27 +115,27 @@ $('.view-button').click(function() {
 
 
 
+$(document).ready(function() {
+  $(".btn-revoke").on("click", function(event) {
+    event.preventDefault();
+    const inviteId = $(this).data("id");
 
-
-$('.revoke-button').click(function() {
-  
-
-  var id = $(this).data('id'); // Get the ID of the invite from the data attribute
-
-    // User confirmed the revocation, make a POST request to the server
-    $.post('/invites/' + id + '/revoke', function(data) {
-      $('#confirm-revoke-modal').modal('show'); // Show the confirmation modal
-      // Success! Update the UI to indicate that the invite has been revoked
-      $('#invite-' + id + ' .status').text('Revoked');
-      $('#invite-' + id + ' .revoke-button').prop('disabled', true);
-      
-    }).fail(function() {
-      // Oops, something went wrong
-      alert('Failed to revoke the invite');
-      $('#confirm-revoke-modal').modal('hide');
-    });
+    if (confirm("Are you sure you want to revoke this invite?")) {
+      // If the user clicks "OK", send the request to the server
+      $.ajax({
+        type: "POST",
+        url: `/invites/${inviteId}/revoke`,
+        success: function() {
+          // Reload the page after the invite is revoked
+          location.reload();
+        },
+        error: function() {
+          alert("Error revoking invite. Please try again later.");
+        }
+      });
+    }
   });
-
+});
 
 
 
