@@ -19,4 +19,23 @@ const storage = function(mcNumber) {
   });
 };
 
-module.exports = storage;
+// Define the upload middleware
+const upload = function(mcNumber) {
+  return multer({
+    limits: {
+      fileSize: 1024 * 1024 * 10 // 10 MB
+    },
+    fileFilter: function(req, file, cb) {
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+      if (!allowedTypes.includes(file.mimetype)) {
+        return cb(new Error('File type not allowed.'));
+      }
+      cb(null, true);
+    },
+    storage: storage(mcNumber)
+  });
+};
+
+module.exports = {
+  upload
+};

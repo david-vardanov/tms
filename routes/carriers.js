@@ -11,11 +11,9 @@ const paginate = require('express-paginate');
 const multer = require('multer');
 const storage = require('../storage');
 
+const { upload } = require('../middlewares');
 
 
-
-
-const upload = multer({ storage });
 
 
 // Other routes...
@@ -89,6 +87,7 @@ router.post('/submit-carrier-setup', upload.single('document'), async (req, res)
     res.status(400).json({ success: false, error: error.message });
   }
 });
+
 
 
 router.get('/setup-complete', async (req, res) => {
