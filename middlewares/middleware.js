@@ -2,6 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+
 // Define the storage object
 const storage = function(mcNumber) {
   return multer.diskStorage({
@@ -36,6 +37,8 @@ const upload = function(mcNumber) {
   });
 };
 
-module.exports = {
-  upload
-};
+
+
+
+
+module.exports = upload;

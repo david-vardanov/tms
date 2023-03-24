@@ -11,7 +11,7 @@ const paginate = require('express-paginate');
 const multer = require('multer');
 const storage = require('../storage');
 
-const { upload } = require('../middlewares');
+const { upload } = require('../middlewares/middleware');
 
 
 
@@ -36,8 +36,25 @@ router.get('/carrier-setup', async (req, res) => {
 });
 
 // POST route for the carrier setup form submission
-router.post('/submit-carrier-setup', upload.single('document'), async (req, res) => {
+router.post('/submit-carrier-setup', async (req, res) => {
   const { mcNumber, token, email, name, phone, address, address2, city, state, zip, einNumber, dotNumber, documentType, documentExpirationDate } = req.body;
+
+  // Create a new storage configuration with the mcNumber
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const carrierMcDir = path.join(__dirname, '..', 'docs', 'carrierMc', mcNumber);
+      // Create a directory for the specific carrier if it does not exist
+      if (!fs.existsSync(carrierMcDir)) {
+        fs.mkdirSync(carrierMcDir, { recursive: true });
+      }
+      cb(null, carrierMcDir);
+    },
+    filename: (req, file, cb) => {
+      cb(null, 'document' + path.extname(file.originalname));
+    },
+  });
+
+  const upload = multer({ storage });
 
   try {
     const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
@@ -69,24 +86,31 @@ router.post('/submit-carrier-setup', upload.single('document'), async (req, res)
     await newCarrier.save();
 
     // Save the uploaded document as a new Document object
-    if (req.file) {
-      const newDocument = new Document({
-        carrier: newCarrier._id,
-        type: documentType,
-        path: path.join('carrierMc', mcNumber, req.file.filename),
-        expirationDate: documentExpirationDate ? new Date(documentExpirationDate) : null,
-      });
-
-      await newDocument.save();
-    }
-
-    res.render('setupComplete', { user: req.user, carrier: newCarrier, title: "Setup Complete" })
-    // res.json({ success: true, newCarrier });
+    upload.single('document')(req, res, async (err) => {
+      if (err) {
+        console.log(err);
+        throw new Error('File upload failed.');
+      }
+      if (req.file) {
+        const newDocument = new Document({
+          carrier: newCarrier._id,
+          type: documentType,
+          path: path.join('carrierMc', mcNumber, req.file.filename),
+          expirationDate: documentExpirationDate ? new Date(documentExpirationDate) : null,
+        });
+  
+        await newDocument.save();
+      }
+  
+      res.render('setupComplete', { user: req.user, carrier: newCarrier, title: "Setup Complete" })
+      // res.json({ success: true, newCarrier });
+    });
   } catch (error) {
     console.error(error);
     res.status(400).json({ success: false, error: error.message });
   }
 });
+
 
 
 
