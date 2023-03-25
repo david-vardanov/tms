@@ -137,6 +137,25 @@ $(document).ready(function() {
   });
 });
 
+async function deleteCarrier() {
+  const carrierId = document.getElementById('carrierId').value;
+  const response = await fetch(`/carriers/${carrierId}`, {
+      method: 'DELETE',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+  });
+
+  const result = await response.json();
+
+  if (result.success) {
+      alert(result.message);
+      // Redirect to another page, for example, the list of carriers
+      window.location.href = '/carriers/list';
+  } else {
+      alert(`Error: ${result.message}`);
+  }
+}
 
 
 // $(document).ready(() => {

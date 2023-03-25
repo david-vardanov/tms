@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 const moment = require('moment');
 const Carrier = require('../models/carrier');
 const Invite = require('../models/invite');
@@ -8,24 +10,41 @@ const Business = require('../models/business');
 const User = require('../models/user');
 const Document = require('../models/document');
 const paginate = require('express-paginate');
+
 const multer = require('multer');
-const storage = require('../storage');
 
-const { upload } = require('../middlewares/middleware');
+//POST REQUEST FOR CARRIER SETUP
+const storage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    const { token } = req.body;
+    const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
+    const invite = await Invite.findById(inviteId);
 
+    const mcNumber = invite.mcNumber || 'unknown'; // Use req.mcNumber instead of req.user.mcNumber
 
+    const dirPath = `./docs/carrierMc/${mcNumber}`;
+    fs.mkdirSync(dirPath, { recursive: true });
+    cb(null, dirPath);
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+  }
+});
+
+const upload = multer({ storage });
 
 
 // Other routes...
 
 router.get('/carrier-setup', async (req, res) => {
   const token = req.query.token;
-  console.log(token)
+  console.log(token);
   try {
     const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
     const invite = await Invite.findById(inviteId);
 
     if (invite && moment().isBefore(invite.expiresAt)) {
+      req.mcNumber = invite.mcNumber; // Add this line
       res.render('carrierSetup', { mcNumber: invite.mcNumber, token, title: "Carrier Setup" });
     } else {
       res.status(400).send('The invite link is expired or invalid.');
@@ -35,146 +54,149 @@ router.get('/carrier-setup', async (req, res) => {
   }
 });
 
-// POST route for the carrier setup form submission
-router.post('/submit-carrier-setup', async (req, res) => {
-  const { mcNumber, token, email, name, phone, address, address2, city, state, zip, einNumber, dotNumber, documentType, documentExpirationDate } = req.body;
 
-  // Create a new storage configuration with the mcNumber
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      const carrierMcDir = path.join(__dirname, '..', 'docs', 'carrierMc', mcNumber);
-      // Create a directory for the specific carrier if it does not exist
-      if (!fs.existsSync(carrierMcDir)) {
-        fs.mkdirSync(carrierMcDir, { recursive: true });
-      }
-      cb(null, carrierMcDir);
-    },
-    filename: (req, file, cb) => {
-      cb(null, 'document' + path.extname(file.originalname));
-    },
-  });
 
-  const upload = multer({ storage });
 
+
+//POST
+router.post('/submit-carrier-setup', upload.single('document'), async (req, res) => {
   try {
+
+    const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, documentType, documentExpirationDate } = req.body;
+    const document = req.file;
+
     const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
     const invite = await Invite.findById(inviteId);
-    if (!invite) {
-      throw new Error('Invite not found.');
-    }
-    if (moment().isAfter(invite.expiresAt)) {
-      throw new Error('Invite has expired.');
-    }
+
 
     const newCarrier = new Carrier({
-      name,
-      mcNumber,
-      email,
-      phone,
-      address,
-      address2,
-      city,
-      state,
-      zip,
-      einNumber,
-      dotNumber,
-      createdBy: invite.createdBy,
-      status: "inModeration",
+      name, mcNumber: invite.mcNumber, email, phone, address, address2, city, state, zip, einNumber, dotNumber,
+      createdBy: req.user._id, status: 'inModeration'
     });
+    console.log(newCarrier)
+    if (document) {
+      const newDocument = {
+        type: documentType,
+        path: document.path,
+        expirationDate: documentExpirationDate ? new Date(documentExpirationDate) : undefined,
+      }; newCarrier.documents.push(newDocument);
+    }
+    
+   await newCarrier.save();
 
-    // Save the new Carrier object
-    await newCarrier.save();
+    req.flash('success', 'Carrier setup submitted successfully. Please wait for approval.');
+    res.render('setupComplete', { title: "Setup Complete" });
+  } catch (err) {
+      console.error(err);
+      req.flash('error', 'An error occurred while submitting the carrier setup.');
+      res.json(err);
+      }
+});
 
-    // Save the uploaded document as a new Document object
-    upload.single('document')(req, res, async (err) => {
-      if (err) {
-        console.log(err);
-        throw new Error('File upload failed.');
-      }
-      if (req.file) {
-        const newDocument = new Document({
-          carrier: newCarrier._id,
-          type: documentType,
-          path: path.join('carrierMc', mcNumber, req.file.filename),
-          expirationDate: documentExpirationDate ? new Date(documentExpirationDate) : null,
-        });
+
+      
+router.get('/setup-complete', async (req, res) => {
+  res.render('setupComplete', { title: "Setup Complete" });
+});
+
+
   
-        await newDocument.save();
+  router.get('/list', paginate.middleware(10, 50), async (req, res) => {
+    if (req.isAuthenticated()) {
+      const { startDate, endDate, isExpired, inModeration } = req.query;
+      
+      const filter = {};
+  
+      if (startDate || endDate) {
+        filter.createdAt = {};
+        if (startDate) filter.createdAt.$gte = new Date(startDate);
+        if (endDate) filter.createdAt.$lte = new Date(endDate);
       }
   
-      res.render('setupComplete', { user: req.user, carrier: newCarrier, title: "Setup Complete" })
-      // res.json({ success: true, newCarrier });
-    });
+      if (isExpired !== undefined) {
+        filter.isExpired = isExpired === 'true';
+      }
+  
+      if (inModeration !== undefined) {
+        filter.status = inModeration === 'true' ? 'inModeration' : { $ne: 'inModeration' };
+      }
+  
+      const [carriersResults] = await Promise.all([
+        Carrier.find(filter).sort({ updatedAt: 'desc' }).limit(req.query.limit).skip(req.skip).lean().exec(),
+      ]);
+  
+      const [carriersCount] = await Promise.all([
+        Carrier.countDocuments(filter),
+      ]);
+  
+      const pageCountCarriers = Math.ceil(carriersCount / req.query.limit);
+      res.render('carrier/list', {
+        user: req.user,
+        title: "",
+        carriers: carriersResults,
+        pageCountCarriers,
+        pagesCarriers: paginate.getArrayPages(req)(3, pageCountCarriers, req.query.page),
+      });
+    } else {
+      res.render('/', {
+        user: req.user,title: ""
+      });
+    }
+  });
+  
+  
+  
+  router.get('/:id', async (req, res) => {
+    try {
+      const carrier = await Carrier.findById(req.params.id);
+      
+      const documents = await Document.find({ carrier: req.params.id });
+      console.log(documents)
+  console.log(documents);
+      res.render('carrier/show', { carrier, documents, title: "Carrier Details" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Internal server error');
+    }
+  });
+  
+  
+  
+  
+  router.post('/:id/decline', async (req, res) => {
+    try {
+      const carrierId = req.params.id;
+  
+      const updatedCarrier = await Carrier.findByIdAndUpdate(carrierId, { status: "Declined" }, { new: true });
+      await updatedCarrier.save();
+      console.log(updatedCarrier);
+      res.redirect('/');
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({ success: false, error: error.message });
+    }
+  });
+
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const carrierId = req.params.id;
+    
+    // Find the carrier by its ID and remove it
+    const deletedCarrier = await Carrier.findByIdAndRemove(carrierId);
+
+    // Check if the carrier was found and deleted
+    if (deletedCarrier) {
+      res.status(200).json({ success: true, message: 'Carrier deleted successfully.' });
+    } else {
+      res.status(404).json({ success: false, message: 'Carrier not found.' });
+    }
   } catch (error) {
     console.error(error);
-    res.status(400).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
-
-
-
-router.get('/setup-complete', async (req, res) => {
-res.render('setupComplete', {
-  title: 'Setup Complete with AGD Logistics',
-  //description: 'AGD Logistics is a premier freight brokerage company in the United States, specializing in Full Truckload (FTL), Less Than Truckload (LTL), and Partial Load transportation services. Founded on April 21, 2020, we provide tailored solutions to meet your specific shipping needs, ensuring a seamless and efficient shipping experience. Choose AGD Logistics as your trusted partner for all your freight brokerage needs.'
-});
-});
-
-router.get('/list', paginate.middleware(10, 50), async (req, res) => {
-  if (req.isAuthenticated()) {
-    const { startDate, endDate, isExpired, inModeration } = req.query;
-    
-    const filter = {};
-
-    if (startDate || endDate) {
-      filter.createdAt = {};
-      if (startDate) filter.createdAt.$gte = new Date(startDate);
-      if (endDate) filter.createdAt.$lte = new Date(endDate);
-    }
-
-    if (isExpired !== undefined) {
-      filter.isExpired = isExpired === 'true';
-    }
-
-    if (inModeration !== undefined) {
-      filter.status = inModeration === 'true' ? 'inModeration' : { $ne: 'inModeration' };
-    }
-
-    const [carriersResults] = await Promise.all([
-      Carrier.find(filter).sort({ updatedAt: 'desc' }).limit(req.query.limit).skip(req.skip).lean().exec(),
-    ]);
-
-    const [carriersCount] = await Promise.all([
-      Carrier.countDocuments(filter),
-    ]);
-
-    const pageCountCarriers = Math.ceil(carriersCount / req.query.limit);
-    res.render('carrier/list', {
-      user: req.user,
-      title: "",
-      carriers: carriersResults,
-      pageCountCarriers,
-      pagesCarriers: paginate.getArrayPages(req)(3, pageCountCarriers, req.query.page),
-    });
-  } else {
-    res.render('/', {
-      user: req.user,title: ""
-    });
-  }
-});
-
-router.get('/:id', async (req, res) => {
-  try {
-    const carrier = await Carrier.findById(req.params.id);
-    const documents = await Document.find({ carrier: req.params.id });
-console.log(documents);
-    res.render('carrier/show', { carrier, documents });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal server error');
-  }
-});
 
 
 module.exports = router;

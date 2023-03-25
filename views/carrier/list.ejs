@@ -61,8 +61,13 @@
               <td><%= carrier.isExpired ? 'Yes' : 'No' %></td>
               <td><%= carrier.status === 'inModeration' ? 'Yes' : 'No' %></td>
               <td><a class="btn btn-secondary btn-sm mx-1" href="/carriers/<%=carrier._id %>" target="_blank"> Show</a>
-                <a class="btn btn-primary btn-sm mx-1" href="/carriers/<%=carrier._id %>/edit" target="_blank"> Edit</a></td>
-            </tr>
+                <a class="btn btn-primary btn-sm mx-1" href="/carriers/<%=carrier._id %>/edit" target="_blank"> Edit</a>
+                <% if(user.role==="admin") { %>
+                  <form id="deleteCarrierForm">
+                    <input type="hidden" id="carrierId" value="<%=carrier._id %>">
+                    <button type="button" onclick="deleteCarrier()">Delete Carrier</button>
+                </form>
+                  <% } %></td>
           <% }) %>
         </tbody>
       </table>

@@ -8,6 +8,7 @@ const businessSchema = new mongoose.Schema({
   mcNumber: {
     type: String,
     required: true,
+    // unique: true,
   },
   email: {
     type: String,
@@ -52,7 +53,7 @@ const businessSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Active', 'Inactive', 'Deactivated', 'Pending', 'inModeration'],
+    enum: ['Active', 'Inactive', 'Deactivated', 'Pending', 'inModeration', 'Declined'],
     default: 'Inactive',
     required: true,
   },

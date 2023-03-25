@@ -1,6 +1,6 @@
 
     
-    <% if (carrier.status === 'inModeration') { %>
+    <% layout('layout.ejs') %>
         <h5><%=carrier.name %> || MC#<%= carrier.mcNumber %></h5>
         
         <div class="row my-3">
@@ -31,13 +31,19 @@
                   <a href="/carriers/documents/<%= document.path %>">
                     View Document
                   </a>
+
                 </li>
               <% }); %>
             </ul>
           </div>
         </div>
-        
+        <% if (carrier.status === 'inModeration') { %>
       <button class="btn btn-primary btn-sm">Moderate</button>
     <% } %>
-
+        <% if(user.role==="admin") { %>
+          <form id="deleteCarrierForm">
+            <input type="hidden" id="carrierId" value="<%=carrier._id %>">
+            <button type="button" onclick="deleteCarrier()">Delete Carrier</button>
+        </form>
+          <% } %>
     <button class="btn btn-secondary btn-sm">Edit</button>

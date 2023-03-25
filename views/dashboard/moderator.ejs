@@ -55,10 +55,12 @@
       <div class="col-md-6">
         <h2>Carriers In Moderation</h2>
         <% carriers.forEach(carrier => { %>
+          <% if(carrier && carrier.status === "inModeration") {%>
           <div class="card mb-3">
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6">
+                  <strong>Status:</strong> <%= carrier.status %>
                   <strong>MC Number:</strong> <%= carrier.mcNumber %>
                 </div>
                 <div class="col-md-6">
@@ -71,11 +73,20 @@
 
                 </div>
                 <div class="col-md-6">
-                  <button class="btn btn-danger btn-sm">Decline</button>
-                </div>
+                <form action="/carriers/<%=carrier._id %>/decline" method="post">
+                  <button class="btn btn-danger btn-sm decline-button">Decline</button>
+              </form>
+              <% if(user.role==="admin") { %>
+                <form id="deleteCarrierForm">
+                  <input type="hidden" id="carrierId" value="<%=carrier._id %>">
+                  <button type="button" onclick="deleteCarrier()">Delete Carrier</button>
+              </form>
+                <% } %>
+            </div>
               </div>
             </div>
           </div>
+          <% } %>
         <% }) %>
       </div>
     </div>
