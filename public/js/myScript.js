@@ -158,6 +158,9 @@ async function deleteCarrier() {
 }
 
 
+
+
+
 async function deleteInvite() {
   const inviteId = document.getElementById('inviteId').value;
   const response = await fetch(`/invites/${inviteId}`, {

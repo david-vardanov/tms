@@ -1,6 +1,17 @@
 const mongoose = require('mongoose');
 const businessSchema = require('./business');
 
+const paymentSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['Factoring', 'Quickpay', 'Any payment'],
+    default: 'Factoring',
+    required: true,
+  },
+  path: { type: String, required: true },
+  expirationDate: { type: Date }
+}, { timestamps: true });
+
 const documentSchema = new mongoose.Schema({
   type: { type: String, required: true },
   path: { type: String, required: true },
@@ -10,6 +21,7 @@ const documentSchema = new mongoose.Schema({
 const carrierSchema = new mongoose.Schema({
   ...businessSchema.obj,
   documents: [documentSchema],
+  paymentMethod: {paymentSchema},
   status: {
     type: String,
     enum: ['Active', 'Inactive', 'Deactivated', 'Pending', 'inModeration', 'Declined'],

@@ -154,7 +154,10 @@ router.get('/setup-complete', async (req, res) => {
     try {
       
       const carrier = await Carrier.findById(req.params.id);
-      const invite = await Invite.find({mcNumber: carrier.mcNumber});
+      if(carrier) {
+        const invite = await Invite.find({mcNumber: carrier.mcNumber});
+      }
+      
       
       console.log(invite)
       res.render('carrier/show', { carrier, documents: carrier.documents, title: "Carrier Details", invite });
@@ -180,7 +183,7 @@ router.get('/setup-complete', async (req, res) => {
   
 
 
-  router.post('/:id/activate', async (req, res) => {
+  router.post('/:id/moderate', async (req, res) => {
     try {
       const carrierId = req.params.id;
       const carrier = await Carrier.findById(carrierId);
@@ -192,7 +195,7 @@ router.get('/setup-complete', async (req, res) => {
         // Generate and save the PDF document
         const fileName = `./docs/carrierMc/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
         generateBrokerCarrierAgreement(carrier, fileName);
-  
+        res.redirect('/');
         res.status(200).json({ success: true, message: 'Carrier activated successfully.' });
       } else {
         res.status(404).json({ success: false, message: 'Carrier not found.' });

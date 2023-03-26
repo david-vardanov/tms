@@ -1,6 +1,6 @@
 
     
-    <% layout('layout.ejs') %>
+
         <h5><%=carrier.name %> || MC#<%= carrier.mcNumber %></h5>
         
         <div class="row my-3">
@@ -18,7 +18,7 @@
             <li>City: <%= carrier.city %></li>
             <li>State: <%= carrier.state %></li>
             <li>Zip: <%= carrier.zip %></li>
-            <li>Invited by: <%= invite. %></li>
+            <li>Invited by: <%= invite.createdBy %></li>
           </ul>
           </div>
         
@@ -55,9 +55,15 @@
             </ul>
           </div>
         </div>
-        <% if (carrier.status && user.role === 'inModeration' && 'moderator') { %>
-      
-    <% } %>
+        <% if (carrier.status === 'inModeration') { %>
+          <form id="moderateCarrierForm" action="/carriers/<%= carrier._id %>/moderate" method="post">
+            <button class="btn btn-primary btn-sm" id="moderateButton" disabled>Moderate</button>
+            <div>
+              <input type="checkbox" id="moderateCheckbox">
+              <label for="moderateCheckbox">By clicking the 'Activate' button, I confirm that I have reviewed and verified all the information about '<%= carrier.name %>'.</label>
+            </div>
+          </form>
+        <% } %>
         <% if(user.role==="admin") { %>
           <form id="deleteCarrierForm">
             <input type="hidden" id="carrierId" value="<%=carrier._id %>">
@@ -65,3 +71,9 @@
         </form>
           <% } %>
     <button class="btn btn-secondary btn-sm">Edit</button>
+    <script>
+      document.getElementById('moderateCheckbox').addEventListener('change', function() {
+        const moderateButton = document.getElementById('moderateButton');
+        moderateButton.disabled = !this.checked;
+      });
+    </script>
