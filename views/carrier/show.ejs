@@ -18,27 +18,45 @@
             <li>City: <%= carrier.city %></li>
             <li>State: <%= carrier.state %></li>
             <li>Zip: <%= carrier.zip %></li>
+            <li>Invited by: <%= invite. %></li>
           </ul>
           </div>
         
           <!-- RIGHT -->
           <div class="col-md-6">
             <h3>Documents</h3>
-            <ul>
-              <% documents.forEach(document => { %>
-                <li>
-                  <%= document.type %>: 
-                  <a href="/carriers/documents/<%= document.path %>">
-                    View Document
-                  </a>
-
-                </li>
-              <% }); %>
+            <% if (carrier.documents.length > 0) { %>
+              <table>
+                  <thead>
+                      <tr>
+                          <th>Document Type</th>
+                          <th>Path</th>
+                          <th>Expiration Date</th>
+                          <th>Actions</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <% carrier.documents.forEach(function(document) { %>
+                          <tr>
+                              <td><%= document.type %></td>
+                              <td><%= document.path %></td>
+                              <td><%= document.expirationDate ? document.expirationDate.toDateString() : 'N/A' %></td>
+                              <td>
+                                <a href="/carriers/<%= carrier.id %>/document/<%= encodeURIComponent(document.path) %>" target="_blank">Open</a>
+                              </td>
+                          </tr>
+                      <% }); %>
+                  </tbody>
+              </table>
+          <% } else { %>
+              <p>No documents available.</p>
+          <% } %>
+      </body>
             </ul>
           </div>
         </div>
-        <% if (carrier.status === 'inModeration') { %>
-      <button class="btn btn-primary btn-sm">Moderate</button>
+        <% if (carrier.status && user.role === 'inModeration' && 'moderator') { %>
+      
     <% } %>
         <% if(user.role==="admin") { %>
           <form id="deleteCarrierForm">

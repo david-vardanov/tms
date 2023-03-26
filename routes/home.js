@@ -27,7 +27,7 @@ router.get('/', paginate.middleware(10, 50), async (req, res) => {
 
     res.render('dashboard/index', {
       user: req.user,
-      title: "",
+      title: "Dashboard",
       invites: invitesResults,
       carriers: carriersResults,
       pageCountInvites,
@@ -38,7 +38,7 @@ router.get('/', paginate.middleware(10, 50), async (req, res) => {
 
   } else {
     res.render('homepage', {
-      user: req.user,title: ""
+      user: req.user,title: "Homepage"
     });
   }
 });

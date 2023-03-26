@@ -1,6 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
+const paginate = require('express-paginate');
+const User = require('../models/user');
+
+
+
+
 // Define login route
 router.route('/login')
   .get((req, res) => {
@@ -36,6 +42,37 @@ router.route('/logout')
     res.redirect('/');
   });
 
+
+
+  router.get('/list', paginate.middleware(10, 50), async (req, res) => {
+    if (req.isAuthenticated()) {
+  
+      const filter = {};
+     const [userResults] = await Promise.all([
+        User.find(filter).sort({ updatedAt: 'desc' }).limit(req.query.limit).skip(req.skip).lean().exec(),
+      ]);
+  
+      const [userCount] = await Promise.all([
+        User.countDocuments(filter),
+      ]);
+  
+      const pageCountUsers = Math.ceil(userCount / req.query.limit);
+      
+      res.render('user/list', {
+        user: req.user,
+        title: "List of Users",
+        users: userResults,
+        pageCountUsers,
+        pagesUsers: paginate.getArrayPages(req)(3, pageCountUsers, req.query.page),
+      });
+    } else {
+      res.render('dashboard', {
+        user: req.user,title: "Dashboard"
+      });
+    }
+  });
+
+  
 // Export the router
 module.exports = router;
 

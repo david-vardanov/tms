@@ -158,6 +158,29 @@ async function deleteCarrier() {
 }
 
 
+async function deleteInvite() {
+  const inviteId = document.getElementById('inviteId').value;
+  const response = await fetch(`/invites/${inviteId}`, {
+      method: 'DELETE',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+  });
+
+  const result = await response.json();
+
+  if (result.success) {
+      alert(result.message);
+      // Redirect to another page, for example, the list of carriers
+      window.location.href = '/invites/list';
+  } else {
+      alert(`Error: ${result.message}`);
+  }
+}
+
+
+
+
 // $(document).ready(() => {
 //   $('#carrier-setup-form').submit((event) => {
 //     event.preventDefault();

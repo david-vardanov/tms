@@ -10,8 +10,12 @@ const Business = require('../models/business');
 const User = require('../models/user');
 const Document = require('../models/document');
 const paginate = require('express-paginate');
+const PDFDocument = require('pdfkit');
+const { generateBrokerCarrierAgreement } = require('../helper/pdfGenerator');
+
 
 const multer = require('multer');
+const ConnectMongoDBSession = require('connect-mongodb-session');
 
 //POST REQUEST FOR CARRIER SETUP
 const storage = multer.diskStorage({
@@ -132,14 +136,14 @@ router.get('/setup-complete', async (req, res) => {
       const pageCountCarriers = Math.ceil(carriersCount / req.query.limit);
       res.render('carrier/list', {
         user: req.user,
-        title: "",
+        title: "List of Carriers",
         carriers: carriersResults,
         pageCountCarriers,
         pagesCarriers: paginate.getArrayPages(req)(3, pageCountCarriers, req.query.page),
       });
     } else {
-      res.render('/', {
-        user: req.user,title: ""
+      res.render('dashboard', {
+        user: req.user,title: "Dashboard"
       });
     }
   });
@@ -148,12 +152,12 @@ router.get('/setup-complete', async (req, res) => {
   
   router.get('/:id', async (req, res) => {
     try {
-      const carrier = await Carrier.findById(req.params.id);
       
-      const documents = await Document.find({ carrier: req.params.id });
-      console.log(documents)
-  console.log(documents);
-      res.render('carrier/show', { carrier, documents, title: "Carrier Details" });
+      const carrier = await Carrier.findById(req.params.id);
+      const invite = await Invite.find({mcNumber: carrier.mcNumber});
+      
+      console.log(invite)
+      res.render('carrier/show', { carrier, documents: carrier.documents, title: "Carrier Details", invite });
     } catch (err) {
       console.error(err);
       res.status(500).send('Internal server error');
@@ -161,42 +165,88 @@ router.get('/setup-complete', async (req, res) => {
   });
   
   
+  router.get('/:id/document/:path', async (req, res) => {
+
+    const documentPath = req.params.path;
+    console.log(documentPath);
+    const fullPath = path.join(__dirname, '..', documentPath);
   
+    if (fs.existsSync(fullPath)) {
+      res.sendFile(fullPath);
+    } else {
+      res.status(404).send('Document not found');
+    }
+  });
   
-  router.post('/:id/decline', async (req, res) => {
+
+
+  router.post('/:id/activate', async (req, res) => {
     try {
       const carrierId = req.params.id;
+      const carrier = await Carrier.findById(carrierId);
   
-      const updatedCarrier = await Carrier.findByIdAndUpdate(carrierId, { status: "Declined" }, { new: true });
-      await updatedCarrier.save();
-      console.log(updatedCarrier);
-      res.redirect('/');
+      if (carrier) {
+        carrier.status = 'Active';
+        await carrier.save();
+  
+        // Generate and save the PDF document
+        const fileName = `./docs/carrierMc/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
+        generateBrokerCarrierAgreement(carrier, fileName);
+  
+        res.status(200).json({ success: true, message: 'Carrier activated successfully.' });
+      } else {
+        res.status(404).json({ success: false, message: 'Carrier not found.' });
+      }
     } catch (error) {
       console.error(error);
-      res.status(400).json({ success: false, error: error.message });
+      res.status(500).json({ success: false, message: 'Internal server error.' });
     }
   });
 
 
-router.delete('/:id', async (req, res) => {
+
+
+  router.delete('/:id', async (req, res) => {
+    try {
+      const carrierId = req.params.id;
+      
+      // Find the carrier by its ID
+      const carrier = await Carrier.findById(carrierId);
+  
+      if (carrier) {
+        // Remove the associated directory
+        const mcNumber = carrier.mcNumber;
+        const dirPath = `./docs/carrierMc/${mcNumber}`;
+        if (fs.existsSync(dirPath)) {
+          fs.rmSync(dirPath, { recursive: true, force: true });
+        }
+  
+        // Remove the carrier from the database
+        await Carrier.findByIdAndRemove(carrierId);
+        res.status(200).json({ success: true, message: 'Carrier deleted successfully.' });
+      } else {
+        res.status(404).json({ success: false, message: 'Carrier not found.' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Internal server error.' });
+    }
+  });
+  
+
+router.post('/:id/decline', async (req, res) => {
   try {
     const carrierId = req.params.id;
-    
-    // Find the carrier by its ID and remove it
-    const deletedCarrier = await Carrier.findByIdAndRemove(carrierId);
 
-    // Check if the carrier was found and deleted
-    if (deletedCarrier) {
-      res.status(200).json({ success: true, message: 'Carrier deleted successfully.' });
-    } else {
-      res.status(404).json({ success: false, message: 'Carrier not found.' });
-    }
+    const updatedCarrier = await Carrier.findByIdAndUpdate(carrierId, { status: "Declined" }, { new: true });
+    await updatedCarrier.save();
+    console.log(updatedCarrier);
+    res.redirect('/');
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: 'Internal server error.' });
+    res.status(400).json({ success: false, error: error.message });
   }
 });
-
 
 
 module.exports = router;
