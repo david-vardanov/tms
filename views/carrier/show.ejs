@@ -30,30 +30,27 @@
                   <thead>
                       <tr>
                           <th>Document Type</th>
-                          <th>Path</th>
                           <th>Expiration Date</th>
                           <th>Actions</th>
                       </tr>
                   </thead>
                   <tbody>
-                      <% carrier.documents.forEach(function(document) { %>
-                          <tr>
-                              <td><%= document.type %></td>
-                              <td><%= document.path %></td>
-                              <td><%= document.expirationDate ? document.expirationDate.toDateString() : 'N/A' %></td>
-                              <td>
-                                <a href="/carriers/<%= carrier.id %>/document/<%= encodeURIComponent(document.path) %>" target="_blank">Open</a>
-                              </td>
-                          </tr>
-                      <% }); %>
-                  </tbody>
+                    <% documents.forEach(function(document) { %>
+                      <tr>
+                        <td><%= document.type %></td>
+                        <td><%= document.expirationDate ? document.expirationDate.toDateString() : 'N/A' %></td>
+                        <td>
+                          <a href="/carriers/<%= carrier.id %>/document/<%= encodeURIComponent(document.path) %>" target="_blank">Open</a>
+                        </td>
+                      </tr>
+
+                    <% }); %>
+                </tbody>
               </table>
           <% } else { %>
               <p>No documents available.</p>
           <% } %>
-      </body>
-            </ul>
-          </div>
+
         </div>
         <% if (carrier.status === 'inModeration') { %>
           <form id="moderateCarrierForm" action="/carriers/<%= carrier._id %>/moderate" method="post">

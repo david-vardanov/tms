@@ -15,7 +15,7 @@
                 <input type="email" class="form-control" id="email" name="email" required>
               </div>
               <div class="form-group">
-                <label for="name">Name</label>
+                <label for="name">Company Name</label>
                 <input type="text" class="form-control" id="name" name="name" required>
               </div>
               <div class="form-group">
@@ -51,21 +51,48 @@
                 <input type="text" class="form-control" id="dotNumber" name="dotNumber">
               </div>
               <div class="form-group">
-                <label for="documentType">Document Type:</label>
-                <select name="documentType">
-                  <option value="NOA">NOA</option>
-                  <option value="VOID check">VOID check</option>
-                  <option value="insurance">Insurance</option>
+                
+              </div>
+              
+              <div class="form-group">
+                <label for="paymentMethod">Payment Method</label>
+                <select class="form-control" id="paymentMethod" name="paymentMethod" required>
+                  <option value="factoring">Factoring</option>
+                  <option value="quickpay1">Quickpay - 1%</option>
+                  <option value="quickpay3">Quickpay - 3%</option>
+                  <option value="quickpay5">Quickpay - 5%</option>
                 </select>
               </div>
+  
               <div class="form-group">
-                <label for="documentExpirationDate">Expiration Date (if applicable):</label>
-                <input type="date" name="documentExpirationDate" />
+                <label for="coi">COI (Certificate of Insurance)</label>
+                <input type="file" class="form-control-file" id="coi" name="coi" required>
               </div>
+  
               <div class="form-group">
-                <label for="document">Upload Document:</label>
-                <input type="file" name="document" />
+                <label for="liabilityInsuranceCertificate">Liability Insurance Certificate</label>
+                <input type="file" class="form-control-file" id="liabilityInsuranceCertificate" name="liabilityInsuranceCertificate" required>
               </div>
+
+              <div class="form-group">
+                <label for="noa">NOA (Notice of Assignment)</label>
+                <input type="file" class="form-control-file" id="noa" name="noa" required>
+              </div>
+      
+              <div class="form-group">
+                <label for="voidCheck">Void Check</label>
+                <input type="file" class="form-control-file" id="voidCheck" name="voidCheck" required>
+              </div>
+      
+              <div class="form-group">
+                <label for="paymentMethod">Payment Method</label>
+                <select class="form-control" id="paymentMethod" name="paymentMethod.type" required>
+                    <% const paymentMethodOptions = ['Factoring', 'Quickpay', 'Any payment']; %>
+                    <% paymentMethodOptions.forEach(function(option) { %>
+                        <option value="<%= option %>"><%= option %></option>
+                    <% }); %>
+                </select>
+            </div>
             
               <button type="submit">Submit</button>
       

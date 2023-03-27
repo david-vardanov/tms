@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const moment = require('moment');
 const Carrier = require('../models/carrier');
+
 const Invite = require('../models/invite');
 const Business = require('../models/business');
 const User = require('../models/user');
@@ -12,6 +13,9 @@ const Document = require('../models/document');
 const paginate = require('express-paginate');
 const PDFDocument = require('pdfkit');
 const { generateBrokerCarrierAgreement } = require('../helper/pdfGenerator');
+
+
+
 
 
 const multer = require('multer');
@@ -42,14 +46,19 @@ const upload = multer({ storage });
 
 router.get('/carrier-setup', async (req, res) => {
   const token = req.query.token;
-  console.log(token);
+
   try {
     const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
     const invite = await Invite.findById(inviteId);
-
+    
+    const mcNumber = invite.mcNumber;
+    
     if (invite && moment().isBefore(invite.expiresAt)) {
-      req.mcNumber = invite.mcNumber; // Add this line
-      res.render('carrierSetup', { mcNumber: invite.mcNumber, token, title: "Carrier Setup" });
+      // Fetch the carrier using the mcNumber
+      
+
+      // Render the carrierSetup view with the carrier data
+      res.render('carrierSetup', { mcNumber, token, title: "Carrier Setup" });
     } else {
       res.status(400).send('The invite link is expired or invalid.');
     }
@@ -60,43 +69,48 @@ router.get('/carrier-setup', async (req, res) => {
 
 
 
-
-
-//POST
-router.post('/submit-carrier-setup', upload.single('document'), async (req, res) => {
+// POST
+router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'liabilityInsuranceCertificate' }, { name: 'noa' }, { name: 'voidCheck' }]), async (req, res) => {
   try {
-
-    const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, documentType, documentExpirationDate } = req.body;
-    const document = req.file;
+    const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, documentExpirationDate } = req.body;
+    const files = req.files;
 
     const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
     const invite = await Invite.findById(inviteId);
-
 
     const newCarrier = new Carrier({
       name, mcNumber: invite.mcNumber, email, phone, address, address2, city, state, zip, einNumber, dotNumber,
       createdBy: req.user._id, status: 'inModeration'
     });
     console.log(newCarrier)
-    if (document) {
-      const newDocument = {
-        type: documentType,
-        path: document.path,
-        expirationDate: documentExpirationDate ? new Date(documentExpirationDate) : undefined,
-      }; newCarrier.documents.push(newDocument);
-    }
+    const fileKeys = ['coi', 'liabilityInsuranceCertificate', 'noa', 'voidCheck'];
+
+    fileKeys.forEach((key) => {
+      if (files[key]) {
+        const file = files[key][0];
+        const newDocument = {
+          type: key,
+          path: file.path,
+          expirationDate: documentExpirationDate ? new Date(documentExpirationDate) : undefined,
+        };
     
-   await newCarrier.save();
-
-    req.flash('success', 'Carrier setup submitted successfully. Please wait for approval.');
-    res.render('setupComplete', { title: "Setup Complete" });
-  } catch (err) {
-      console.error(err);
-      req.flash('error', 'An error occurred while submitting the carrier setup.');
-      res.json(err);
+        // Add the document property to the newDocument object
+        newDocument[key] = file.filename;
+    
+        newCarrier.documents.push(newDocument);
       }
-});
+    });
 
+    await newCarrier.save();
+        req.flash('success', 'Carrier setup submitted successfully. Please wait for approval.');
+        res.render('setupComplete', { title: "Setup Complete" });
+      } catch (err) {
+          console.error(err);
+          req.flash('error', 'An error occurred while submitting the carrier setup.');
+          res.json(err);
+          }
+          });
+        
 
       
 router.get('/setup-complete', async (req, res) => {
@@ -149,37 +163,107 @@ router.get('/setup-complete', async (req, res) => {
   });
   
   
-  
+  //carrier show
   router.get('/:id', async (req, res) => {
+    
     try {
-      
-      const carrier = await Carrier.findById(req.params.id);
-      if(carrier) {
+      const carrier = await Carrier.findById(req.params.id).populate('documents');
         const invite = await Invite.find({mcNumber: carrier.mcNumber});
-      }
-      
-      
-      console.log(invite)
-      res.render('carrier/show', { carrier, documents: carrier.documents, title: "Carrier Details", invite });
+        const firstDocument = carrier.documents[0];
+        console.log(carrier.documents)
+        if (firstDocument.hasOwnProperty('coi')) {
+          const coi = firstDocument.coi;
+          console.log(coi);
+        } else {
+          console.log('coi field does not exist in the document');
+        }
+      res.render('carrier/show', { invite, carrier, documents: carrier.documents, title: "Carrier Details" });
     } catch (err) {
       console.error(err);
       res.status(500).send('Internal server error');
     }
   });
-  
-  
-  router.get('/:id/document/:path', async (req, res) => {
 
-    const documentPath = req.params.path;
-    console.log(documentPath);
-    const fullPath = path.join(__dirname, '..', documentPath);
-  
-    if (fs.existsSync(fullPath)) {
-      res.sendFile(fullPath);
+
+  //update carrier route
+router.put('/:id', async (req, res) => {
+  try {
+    const carrierId = req.params.id;
+    const updates = req.body;
+
+    // Find the carrier by its ID and update it
+    const updatedCarrier = await Carrier.findByIdAndUpdate(carrierId, updates, { new: true });
+
+    // Check if the carrier was found and updated
+    if (updatedCarrier) {
+      res.redirect("/carriers/" + carrierId + "/edit");
+
     } else {
-      res.status(404).send('Document not found');
+      res.status(404).json({ success: false, message: 'Carrier not found.' });
     }
-  });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+});
+  
+  // Edit carrier
+router.get('/:id/edit', async (req, res) => {
+  
+  try {
+    const carrierId = req.params.id;
+    console.log(carrierId);
+    const carrier = await Carrier.findById(carrierId);
+    
+
+    if (carrier) {
+      res.render('carrier/edit', { carrier: carrier, title: "Edit Carrier" });
+    } else {
+      res.status(404).json({ success: false, message: 'Carrier not found.' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+});
+
+
+
+
+
+  
+router.get('/:id', async (req, res) => {
+  try {
+    const carrier = await Carrier.findById(req.params.id).populate('documents');
+    const invite = await Invite.find({mcNumber: carrier.mcNumber});
+    const firstDocument = carrier.documents[0];
+    console.log(carrier.documents);
+
+    // if (firstDocument.hasOwnProperty('coi')) {
+    //   const coi = firstDocument.coi;
+    //   console.log(coi);
+    // } else if (firstDocument.hasOwnProperty('liabilityInsuranceCertificate')) {
+    //   const liabilityInsuranceCertificate = firstDocument.liabilityInsuranceCertificate;
+    //   console.log(liabilityInsuranceCertificate);
+    // } else if (firstDocument.hasOwnProperty('noa')) {
+    //   const noa = firstDocument.noa;
+    //   console.log(noa);
+    // } else if (firstDocument.hasOwnProperty('voidCheck')) {
+    //   const voidCheck = firstDocument.voidCheck;
+    //   console.log(voidCheck);
+    // } else {
+    //   console.log('No valid field found in the document');
+    // }
+
+    res.render('carrier/show', { invite, carrier, documents: carrier.documents, title: "Carrier Details" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+
+
   
 
 

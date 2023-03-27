@@ -6,6 +6,7 @@ const flash = require('express-flash');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
 require('dotenv').config();
+const methodOverride = require('method-override');
 
 const db = require('./config/db');
 const passportConfig = require('./config/passport');
@@ -37,6 +38,7 @@ app.use(express.static('uploads'));
 app.use(express.static('public'));
 app.use(flash());
 app.use(setUserLocal);
+app.use(methodOverride('_method'));
 
 app.use(routes);
 
