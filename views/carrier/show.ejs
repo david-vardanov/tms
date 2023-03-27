@@ -30,7 +30,7 @@
                   <thead>
                       <tr>
                           <th>Document Type</th>
-                          <th>Expiration Date</th>
+
                           <th>Actions</th>
                       </tr>
                   </thead>
@@ -38,14 +38,17 @@
                     <% documents.forEach(function(document) { %>
                       <tr>
                         <td><%= document.type %></td>
-                        <td><%= document.expirationDate ? document.expirationDate.toDateString() : 'N/A' %></td>
                         <td>
-                          <a href="/carriers/<%= carrier.id %>/document/<%= encodeURIComponent(document.path) %>" target="_blank">Open</a>
+                          <% if (document.url) { %>
+                            <a href="<%= document.url %>" target="_blank">Open</a>
+                          <% } else { %>
+                            N/A
+                          <% } %>
                         </td>
                       </tr>
-
                     <% }); %>
-                </tbody>
+                  </tbody>
+                  
               </table>
           <% } else { %>
               <p>No documents available.</p>

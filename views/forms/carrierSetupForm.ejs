@@ -1,105 +1,90 @@
 <div class="container mt-5">
-    <div class="row">
-      <div class="col-md-6 offset-md-3">
-        <div class="card">
-          <div class="card-header">
-            <h3>Carrier Setup</h3>
-          </div>
-          <div class="card-body">
-            <form action="/carriers/submit-carrier-setup" method="post" enctype="multipart/form-data">
-              <input type="hidden" name="token" value="<%= token %>">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <div class="card">
+        <div class="card-header">
+          <h3>Carrier Setup</h3>
+        </div>
+        <div class="card-body">
+          <form action="/carriers/submit-carrier-setup" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="token" value="<%= token %>">
    
-
-              <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-              </div>
-              <div class="form-group">
-                <label for="name">Company Name</label>
-                <input type="text" class="form-control" id="name" name="name" required>
-              </div>
-              <div class="form-group">
-                <label for="phone">Phone</label>
-                <input type="text" class="form-control" id="phone" name="phone">
-              </div>
-              <div class="form-group">
-                <label for="address">Address</label>
-                <input type="text" class="form-control" id="address" name="address" required>
-              </div>
-              <div class="form-group">
-                <label for="address2">Address 2</label>
-                <input type="text" class="form-control" id="address2" name="address2">
-              </div>
-              <div class="form-group">
-                <label for="city">City</label>
-                <input type="text" class="form-control" id="city" name="city" required>
-              </div>
-              <div class="form-group">
-                <label for="state">State</label>
-                <input type="text" class="form-control" id="state" name="state" required>
-              </div>
-              <div class="form-group">
-                <label for="zip">ZIP Code</label>
-                <input type="text" class="form-control" id="zip" name="zip" required>
-              </div>
-              <div class="form-group">
-                <label for="einNumber">EIN Number</label>
-                <input type="text" class="form-control" id="einNumber" name="einNumber">
-              </div>
-              <div class="form-group">
-                <label for="dotNumber">DOT Number</label>
-                <input type="text" class="form-control" id="dotNumber" name="dotNumber">
-              </div>
-              <div class="form-group">
-                
-              </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="name">Company Name</label>
+              <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <input type="text" class="form-control" id="phone" name="phone">
+            </div>
+            <div class="form-group">
+              <label for="address">Address</label>
+              <input type="text" class="form-control" id="address" name="address" required>
+            </div>
+            <div class="form-group">
+              <label for="address2">Address 2</label>
+              <input type="text" class="form-control" id="address2" name="address2">
+            </div>
+            <div class="form-group">
+              <label for="city">City</label>
+              <input type="text" class="form-control" id="city" name="city" required>
+            </div>
+            <div class="form-group">
+              <label for="state">State</label>
+              <input type="text" class="form-control" id="state" name="state" required>
+            </div>
+            <div class="form-group">
+              <label for="zip">ZIP Code</label>
+              <input type="text" class="form-control" id="zip" name="zip" required>
+            </div>
+            <div class="form-group">
+              <label for="einNumber">EIN Number</label>
+              <input type="text" class="form-control" id="einNumber" name="einNumber">
+            </div>
+            <div class="form-group">
+              <label for="dotNumber">DOT Number</label>
+              <input type="text" class="form-control" id="dotNumber" name="dotNumber">
+            </div>
               
-              <div class="form-group">
-                <label for="paymentMethod">Payment Method</label>
-                <select class="form-control" id="paymentMethod" name="paymentMethod" required>
-                  <option value="factoring">Factoring</option>
-                  <option value="quickpay1">Quickpay - 1%</option>
-                  <option value="quickpay3">Quickpay - 3%</option>
-                  <option value="quickpay5">Quickpay - 5%</option>
-                </select>
-              </div>
-  
-              <div class="form-group">
-                <label for="coi">COI (Certificate of Insurance)</label>
-                <input type="file" class="form-control-file" id="coi" name="coi" required>
-              </div>
-  
-              <div class="form-group">
-                <label for="liabilityInsuranceCertificate">Liability Insurance Certificate</label>
-                <input type="file" class="form-control-file" id="liabilityInsuranceCertificate" name="liabilityInsuranceCertificate" required>
-              </div>
-
-              <div class="form-group">
-                <label for="noa">NOA (Notice of Assignment)</label>
-                <input type="file" class="form-control-file" id="noa" name="noa" required>
-              </div>
-      
-              <div class="form-group">
-                <label for="voidCheck">Void Check</label>
-                <input type="file" class="form-control-file" id="voidCheck" name="voidCheck" required>
-              </div>
-      
-              <div class="form-group">
-                <label for="paymentMethod">Payment Method</label>
-                <select class="form-control" id="paymentMethod" name="paymentMethod.type" required>
-                    <% const paymentMethodOptions = ['Factoring', 'Quickpay', 'Any payment']; %>
-                    <% paymentMethodOptions.forEach(function(option) { %>
-                        <option value="<%= option %>"><%= option %></option>
-                    <% }); %>
-                </select>
+            <div class="form-group">
+              <label for="paymentMethod">Payment Method</label>
+              <select class="form-control" id="paymentMethod" name="paymentMethod" required>
+                <option value="factoring">Factoring</option>
+                <option value="quickpay">Quickpay</option>
+              </select>
             </div>
             
-              <button type="submit">Submit</button>
-      
+            
+            <div class="form-group">
+            <label for="coi">COI (Certificate of Insurance)</label>
+            <input type="file" class="form-control-file" id="coi" name="coi" required>
+            </div>
+
+            <div class="form-group">
+            <label for="liabilityInsuranceCertificate">Liability Insurance Certificate</label>
+            <input type="file" class="form-control-file" id="liabilityInsuranceCertificate" name="liabilityInsuranceCertificate" required>
+            </div>
+
+
+            <div class="form-group">
+            <label for="noa">NOA (Notice of Assignment)</label>
+            <input type="file" class="form-control-file" id="noa" name="noa" required>
+            </div>
+
+            <div class="form-group">
+            <label for="voidCheck">Void Check</label>
+            <input type="file" class="form-control-file" id="voidCheck" name="voidCheck" required>
+            </div>
+            
+            <button type="submit">Submit</button>
+
             </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
+            </div>
+            </div>
+            </div>
+            </div>
+            </div>

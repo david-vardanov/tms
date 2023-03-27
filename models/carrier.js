@@ -10,27 +10,10 @@ const paymentSchema = new Schema({
   },
 });
 
-const documentSchema = new Schema({
-  coi: {
-    type: String,
-    path: String,
-    expirationDate: Date,
-  },
-  liabilityInsuranceCertificate: {
-    type: String,
-    path: String,
-    expirationDate: Date,
-  },
-  noa: {
-    type: String,
-    path: String,
-    expirationDate: Date,
-  },
-  voidCheck: {
-    type: String,
-    path: String,
-    expirationDate: Date,
-  },
+const documentSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  type: { type: String, enum: ['coi', 'noa', 'voidCheck', 'liabilityInsuranceCertificate'], required: true },
+  url: { type: String, required: true }
 });
 
 const carrierSchema = new Schema({

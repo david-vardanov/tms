@@ -69,6 +69,7 @@ router.get('/carrier-setup', async (req, res) => {
 
 
 
+
 // POST
 router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'liabilityInsuranceCertificate' }, { name: 'noa' }, { name: 'voidCheck' }]), async (req, res) => {
   try {
@@ -79,37 +80,61 @@ router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'li
     const invite = await Invite.findById(inviteId);
 
     const newCarrier = new Carrier({
-      name, mcNumber: invite.mcNumber, email, phone, address, address2, city, state, zip, einNumber, dotNumber,
+      name, mcNumber: invite.mcNumber, email, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod,
       createdBy: req.user._id, status: 'inModeration'
     });
-    console.log(newCarrier)
-    const fileKeys = ['coi', 'liabilityInsuranceCertificate', 'noa', 'voidCheck'];
 
-    fileKeys.forEach((key) => {
-      if (files[key]) {
-        const file = files[key][0];
+    const documentTypes = ['coi', 'liabilityInsuranceCertificate', 'noa', 'voidCheck'];
+
+    documentTypes.forEach((type) => {
+      if (files[type]) {
+        const file = files[type][0];
         const newDocument = {
-          type: key,
-          path: file.path,
-          expirationDate: documentExpirationDate ? new Date(documentExpirationDate) : undefined,
+          type,
+          url: file.path,
+          name,
         };
-    
-        // Add the document property to the newDocument object
-        newDocument[key] = file.filename;
-    
+
         newCarrier.documents.push(newDocument);
       }
     });
 
+    
+
+    // User must provide COI and liability insurance certificate no matter what payment method they choose
+    if (files.coi) {
+      const coi = {
+        type: 'coi',
+        url: files.coi[0].path,
+        name: name,
+      };
+
+      newCarrier.documents.push(coi);
+    }
+
+    if (files.liabilityInsuranceCertificate) {
+      const liabilityInsuranceCertificate = {
+        type: 'liabilityInsuranceCertificate',
+        url: files.liabilityInsuranceCertificate[0].path,
+        name,
+      };
+
+      newCarrier.documents.push(liabilityInsuranceCertificate);
+    }
+
     await newCarrier.save();
-        req.flash('success', 'Carrier setup submitted successfully. Please wait for approval.');
-        res.render('setupComplete', { title: "Setup Complete" });
-      } catch (err) {
-          console.error(err);
-          req.flash('error', 'An error occurred while submitting the carrier setup.');
-          res.json(err);
-          }
-          });
+    req.flash('success', 'Carrier setup submitted successfully. Please wait for approval.');
+    res.render('setupComplete', { title: "Setup Complete" });
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'An error occurred while submitting the carrier setup.');
+    res.json(err);
+  }
+});
+
+
+      
+
         
 
       
@@ -280,7 +305,7 @@ router.get('/:id', async (req, res) => {
         const fileName = `./docs/carrierMc/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
         generateBrokerCarrierAgreement(carrier, fileName);
         res.redirect('/');
-        res.status(200).json({ success: true, message: 'Carrier activated successfully.' });
+
       } else {
         res.status(404).json({ success: false, message: 'Carrier not found.' });
       }
