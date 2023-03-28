@@ -13,6 +13,9 @@ const Document = require('../models/document');
 const paginate = require('express-paginate');
 const PDFDocument = require('pdfkit');
 const { generateBrokerCarrierAgreement } = require('../helper/pdfGenerator');
+const { validateInput, validationSchemas } = require('../helper/inputValidation');
+
+
 
 
 
@@ -71,8 +74,12 @@ router.get('/carrier-setup', async (req, res) => {
 
 
 // POST
-router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'liabilityInsuranceCertificate' }, { name: 'noa' }, { name: 'voidCheck' }]), async (req, res) => {
+router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' },validateInput(validationSchemas.CarrierSchema, 'body'), { name: 'liabilityInsuranceCertificate' }, { name: 'noa' }, { name: 'voidCheck' }]), async (req, res) => {
   try {
+      validateInput(req.body, validationSchemas.businessSchema);
+      validateInput(req.body, validationSchemas.paymentSchema);
+      validateInput(req.body, validationSchemas.documentSchema);
+
     const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, documentExpirationDate } = req.body;
     const files = req.files;
 
@@ -123,6 +130,8 @@ router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'li
     }
 
     await newCarrier.save();
+    invite.isExpired = true;
+    await invite.save();
     req.flash('success', 'Carrier setup submitted successfully. Please wait for approval.');
     res.render('setupComplete', { title: "Setup Complete" });
   } catch (err) {

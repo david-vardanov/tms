@@ -44,7 +44,7 @@ app.use(routes);
 
 app.use(handleError);
 
-const PORT = process.env.PORT || 3050;
+const PORT = process.env.PORT || 3030;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
