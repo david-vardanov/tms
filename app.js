@@ -5,17 +5,39 @@ const session = require('express-session');
 const flash = require('express-flash');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
+const helmet = require('helmet');
+
+
 require('dotenv').config();
 const methodOverride = require('method-override');
+const expressSanitizer = require('express-sanitizer');
 
 const db = require('./config/db');
 const passportConfig = require('./config/passport');
 const { handleError, setUserLocal } = require('./middlewares');
 const routes = require('./routes');
 
+
 db.connect();
 
 const app = express();
+
+// Add helmet middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "script-src": [
+        "'self'",
+        "https://code.jquery.com",
+        "https://cdn.jsdelivr.net",
+        "https://cdnjs.cloudflare.com",
+        "https://maxcdn.bootstrapcdn.com"
+      ],
+    },
+  },
+  crossOriginEmbedderPolicy: false, // Add this line
+}));
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -30,6 +52,7 @@ app.use(passport.session());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(expressSanitizer());
 
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');

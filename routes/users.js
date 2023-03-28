@@ -4,6 +4,8 @@ const passport = require('passport');
 const paginate = require('express-paginate');
 const User = require('../models/user');
 const { validateLogin } = require('../middlewares/validation');
+const isAuthenticated = require('../middlewares/authMiddleware');
+
 
 
 
@@ -44,7 +46,7 @@ router.route('/logout')
 
 
 
-  router.get('/list', paginate.middleware(10, 50), async (req, res) => {
+  router.get('/list',isAuthenticated, paginate.middleware(10, 50), async (req, res) => {
     if (req.isAuthenticated()) {
   
       const filter = {};

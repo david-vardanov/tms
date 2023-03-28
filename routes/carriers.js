@@ -14,6 +14,7 @@ const paginate = require('express-paginate');
 const PDFDocument = require('pdfkit');
 
 const { validateCarrierSetup } = require('../middlewares/validation');
+const { sanitizeInput } = require('../middlewares/sanitize');
 
 
 
@@ -78,7 +79,7 @@ router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'li
   try {
 
 
-    const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, documentExpirationDate } = req.body;
+    const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, documentExpirationDate } = sanitizeInput(req.body, req);
     const files = req.files;
 
     const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
@@ -215,7 +216,7 @@ router.get('/setup-complete', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const carrierId = req.params.id;
-    const updates = req.body;
+    const updates = sanitizeInput(req.body, req);
 
     // Find the carrier by its ID and update it
     const updatedCarrier = await Carrier.findByIdAndUpdate(carrierId, updates, { new: true });
