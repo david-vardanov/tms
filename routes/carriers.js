@@ -12,8 +12,7 @@ const User = require('../models/user');
 const Document = require('../models/document');
 const paginate = require('express-paginate');
 const PDFDocument = require('pdfkit');
-const { generateBrokerCarrierAgreement } = require('../helper/pdfGenerator');
-const { validateInput, validationSchemas } = require('../helper/inputValidation');
+
 
 
 
@@ -72,13 +71,10 @@ router.get('/carrier-setup', async (req, res) => {
 
 
 
-
 // POST
-router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' },validateInput(validationSchemas.CarrierSchema, 'body'), { name: 'liabilityInsuranceCertificate' }, { name: 'noa' }, { name: 'voidCheck' }]), async (req, res) => {
+router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'liabilityInsuranceCertificate' }, { name: 'noa' }, { name: 'voidCheck' }]), async (req, res) => {
   try {
-      validateInput(req.body, validationSchemas.businessSchema);
-      validateInput(req.body, validationSchemas.paymentSchema);
-      validateInput(req.body, validationSchemas.documentSchema);
+
 
     const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, documentExpirationDate } = req.body;
     const files = req.files;
@@ -205,12 +201,6 @@ router.get('/setup-complete', async (req, res) => {
         const invite = await Invite.find({mcNumber: carrier.mcNumber});
         const firstDocument = carrier.documents[0];
         console.log(carrier.documents)
-        if (firstDocument.hasOwnProperty('coi')) {
-          const coi = firstDocument.coi;
-          console.log(coi);
-        } else {
-          console.log('coi field does not exist in the document');
-        }
       res.render('carrier/show', { invite, carrier, documents: carrier.documents, title: "Carrier Details" });
     } catch (err) {
       console.error(err);
