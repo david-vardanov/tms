@@ -13,6 +13,8 @@ const Document = require('../models/document');
 const paginate = require('express-paginate');
 const PDFDocument = require('pdfkit');
 
+const { validateCarrierSetup } = require('../middlewares/validation');
+
 
 
 
@@ -72,7 +74,7 @@ router.get('/carrier-setup', async (req, res) => {
 
 
 // POST
-router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'liabilityInsuranceCertificate' }, { name: 'noa' }, { name: 'voidCheck' }]), async (req, res) => {
+router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'liabilityInsuranceCertificate' }, { name: 'noa' }, { name: 'voidCheck' }]),validateCarrierSetup, async (req, res) => {
   try {
 
 

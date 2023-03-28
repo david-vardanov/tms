@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const paginate = require('express-paginate');
 const User = require('../models/user');
-
+const { validateLogin } = require('../middlewares/validation');
 
 
 
@@ -14,7 +14,7 @@ router.route('/login')
         title: 'Login'
       }); 
   })
-  .post((req, res, next) => {
+  .post(validateLogin, async (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
       if (err) {
         console.log('Error during authentication:', err);
