@@ -91,7 +91,7 @@ const options = {
 
 // Create HTTPS server
 https.createServer(options, app)
-  .listen(443, function () {
+  .listen(process.env.SPORT, function () {
     console.log(`Server is running on port 443`);
   });
 
@@ -100,7 +100,7 @@ const http = express();
 http.get('*', function (req, res) {
   res.redirect('https://' + req.headers.host + req.url);
 });
-http.listen(80, function () {
+http.listen(process.env.PORT, function () {
   console.log(`Server is running on port 80`);
 });
 
