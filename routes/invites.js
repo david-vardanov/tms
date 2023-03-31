@@ -9,7 +9,7 @@ const Invite = require('../models/invite');
 const User = require('../models/user');
 const sendEmail = require('../helper/send-email');
 const paginate = require('express-paginate');
-const Log = require('../models/Log'); // Import the Log model
+const Log = require('../models/log'); // Import the Log model
 const isAuthenticated = require('../middlewares/authMiddleware');
 const uaParser = require('ua-parser-js');
 // Other routes...
