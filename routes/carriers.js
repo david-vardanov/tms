@@ -12,10 +12,10 @@ const User = require('../models/user');
 const Document = require('../models/document');
 const paginate = require('express-paginate');
 const PDFDocument = require('pdfkit');
-
-const { validateCarrierSetup } = require('../middlewares/validation');
 const { sanitizeInput } = require('../middlewares/sanitize');
-
+const { validateCarrierSetup } = require('../middlewares/validation');
+const { generateBrokerCarrierAgreement } = require('../helper/pdfGenerator');
+const isAuthenticated = require('../middlewares/authMiddleware');
 
 
 
@@ -61,9 +61,8 @@ router.get('/carrier-setup', async (req, res) => {
     if (invite && moment().isBefore(invite.expiresAt)) {
       // Fetch the carrier using the mcNumber
       
-
       // Render the carrierSetup view with the carrier data
-      res.render('carrierSetup', { mcNumber, token, title: "Carrier Setup" });
+      res.render('carrierSetup', { mcNumber,invite, token, title: "Carrier Setup" });
     } else {
       res.status(400).send('The invite link is expired or invalid.');
     }
@@ -152,7 +151,7 @@ router.get('/setup-complete', async (req, res) => {
 
 
   
-  router.get('/list', paginate.middleware(10, 50), async (req, res) => {
+  router.get('/list',isAuthenticated, paginate.middleware(10, 50), async (req, res) => {
     if (req.isAuthenticated()) {
       const { startDate, endDate, isExpired, inModeration } = req.query;
       
@@ -197,14 +196,14 @@ router.get('/setup-complete', async (req, res) => {
   
   
   //carrier show
-  router.get('/:id', async (req, res) => {
+  router.get('/:id',isAuthenticated, async (req, res) => {
     
     try {
       const carrier = await Carrier.findById(req.params.id).populate('documents');
-        const invite = await Invite.find({mcNumber: carrier.mcNumber});
+        const invite = await Invite.find({mcNumber: carrier.mcNumber}).populate('logs');
         const firstDocument = carrier.documents[0];
         console.log(carrier.documents)
-      res.render('carrier/show', { invite, carrier, documents: carrier.documents, title: "Carrier Details" });
+      res.render('carrier/show', { invite, carrier, logs: invite.logs, documents: carrier.documents, title: "Carrier Details" });
     } catch (err) {
       console.error(err);
       res.status(500).send('Internal server error');
@@ -213,7 +212,7 @@ router.get('/setup-complete', async (req, res) => {
 
 
   //update carrier route
-router.put('/:id', async (req, res) => {
+router.put('/:id',isAuthenticated, async (req, res) => {
   try {
     const carrierId = req.params.id;
     const updates = sanitizeInput(req.body, req);
@@ -235,14 +234,13 @@ router.put('/:id', async (req, res) => {
 });
   
   // Edit carrier
-router.get('/:id/edit', async (req, res) => {
+router.get('/:id/edit',isAuthenticated, async (req, res) => {
   
   try {
     const carrierId = req.params.id;
     console.log(carrierId);
     const carrier = await Carrier.findById(carrierId);
     
-
     if (carrier) {
       res.render('carrier/edit', { carrier: carrier, title: "Edit Carrier" });
     } else {
@@ -253,45 +251,6 @@ router.get('/:id/edit', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
-
-
-
-
-
-  
-router.get('/:id', async (req, res) => {
-  try {
-    const carrier = await Carrier.findById(req.params.id).populate('documents');
-    const invite = await Invite.find({mcNumber: carrier.mcNumber});
-    const firstDocument = carrier.documents[0];
-    console.log(carrier.documents);
-
-    // if (firstDocument.hasOwnProperty('coi')) {
-    //   const coi = firstDocument.coi;
-    //   console.log(coi);
-    // } else if (firstDocument.hasOwnProperty('liabilityInsuranceCertificate')) {
-    //   const liabilityInsuranceCertificate = firstDocument.liabilityInsuranceCertificate;
-    //   console.log(liabilityInsuranceCertificate);
-    // } else if (firstDocument.hasOwnProperty('noa')) {
-    //   const noa = firstDocument.noa;
-    //   console.log(noa);
-    // } else if (firstDocument.hasOwnProperty('voidCheck')) {
-    //   const voidCheck = firstDocument.voidCheck;
-    //   console.log(voidCheck);
-    // } else {
-    //   console.log('No valid field found in the document');
-    // }
-
-    res.render('carrier/show', { invite, carrier, documents: carrier.documents, title: "Carrier Details" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal server error');
-  }
-});
-
-
-
-  
 
 
   router.post('/:id/moderate', async (req, res) => {

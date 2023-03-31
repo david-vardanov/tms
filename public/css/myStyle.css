@@ -169,3 +169,11 @@
 body {
   flex-grow: 1;
 }
+
+#noaUpload {
+display: none;
+}
+
+#voidCheckUpload {
+  display: none;
+}

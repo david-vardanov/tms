@@ -7,19 +7,22 @@
           
           <!-- LEFT -->
           <div class="col-md-6 border rounded py-3">
-            <ul style="list-style-type: none;">
-            <h6 clas="text-muted">Business details</h6>
-            <li>Phone: <%= carrier.phone %></li>
-            <li>Email: <%= carrier.email %></li>
-            <li>DOT: <%= carrier.dotNumber %></li>
-            <li>EIN: <%= carrier.einNumber %></li>
-            <li>Address: <%= carrier.address %></li>
-            <% if(carrier.address2) {%> <li>Address2: <%= carrier.address2 %></li><% } %>
-            <li>City: <%= carrier.city %></li>
-            <li>State: <%= carrier.state %></li>
-            <li>Zip: <%= carrier.zip %></li>
-            <li>Invited by: <%= invite.createdBy %></li>
-          </ul>
+            <div class="col-md-12">
+              <ul style="list-style-type: none;">
+                <h6 clas="text-muted">Business details</h6>
+                <li>Phone: <%= carrier.phone %></li>
+                <li>Email: <%= carrier.email %></li>
+                <li>DOT: <%= carrier.dotNumber %></li>
+                <li>EIN: <%= carrier.einNumber %></li>
+                <li>Address: <%= carrier.address %></li>
+                <% if(carrier.address2) {%> <li>Address2: <%= carrier.address2 %></li><% } %>
+                <li>City: <%= carrier.city %></li>
+                <li>State: <%= carrier.state %></li>
+                <li>Zip: <%= carrier.zip %></li>
+                <li>Invited by: <%= invite.createdBy %></li>
+              </ul>
+            </div>
+            
           </div>
         
           <!-- RIGHT -->
@@ -27,11 +30,10 @@
             <h3>Documents</h3>
             <% if (carrier.documents.length > 0) { %>
               <table>
-                  <thead>
-                      <tr>
-                          <th>Document Type</th>
-
-                          <th>Actions</th>
+                <thead>
+                   <tr>
+                    <th>Document Type</th>
+                    <th>Actions</th>
                       </tr>
                   </thead>
                   <tbody>
@@ -48,32 +50,36 @@
                       </tr>
                     <% }); %>
                   </tbody>
-                  
               </table>
-          <% } else { %>
+            <% } else { %>
               <p>No documents available.</p>
-          <% } %>
-
-        </div>
-        <% if (carrier.status === 'inModeration') { %>
-          <form id="moderateCarrierForm" action="/carriers/<%= carrier._id %>/moderate" method="post">
-            <button class="btn btn-primary btn-sm" id="moderateButton" disabled>Moderate</button>
-            <div>
-              <input type="checkbox" id="moderateCheckbox">
-              <label for="moderateCheckbox">By clicking the 'Activate' button, I confirm that I have reviewed and verified all the information about '<%= carrier.name %>'.</label>
+            <% } %>
+          </div>
+          <!-- BOTTOM -->
+          <div class="row">
+            <div class="col-md-4">
+              <% if (carrier.status === 'inModeration') { %>
+                <form id="moderateCarrierForm" action="/carriers/<%= carrier._id %>/moderate" method="post">
+                  <button class="btn btn-primary btn-sm" id="moderateButton" disabled>Moderate</button>
+                  <div>
+                    <input type="checkbox" id="moderateCheckbox">
+                    <label for="moderateCheckbox">By clicking the 'Activate' button, I confirm that I have reviewed and verified all the information about '<%= carrier.name %>'.</label>
+                  </div>
+                </form>
+              <% } %>
             </div>
-          </form>
-        <% } %>
-        <% if(user.role==="admin") { %>
-          <form id="deleteCarrierForm">
-            <input type="hidden" id="carrierId" value="<%=carrier._id %>">
-            <button type="button" onclick="deleteCarrier()">Delete Carrier</button>
-        </form>
-          <% } %>
-    <button class="btn btn-secondary btn-sm">Edit</button>
-    <script>
-      document.getElementById('moderateCheckbox').addEventListener('change', function() {
-        const moderateButton = document.getElementById('moderateButton');
-        moderateButton.disabled = !this.checked;
-      });
-    </script>
+            <div class="col-md-4">
+              <% if(user.role==="admin") { %>
+                <form id="deleteCarrierForm">
+                  <input type="hidden" id="carrierId" value="<%=carrier._id %>">
+                  <button type="button" onclick="deleteCarrier()">Delete Carrier</button>
+              </form>
+                <% } %>
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-secondary btn-sm">Edit</button>
+            </div>
+          </div>
+        
+        
+    

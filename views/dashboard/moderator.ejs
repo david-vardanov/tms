@@ -14,11 +14,11 @@
                 <div class="col-md-6"> 
                   <div class="row">
                     <div class="col-md-4">
-                      <button class="btn btn-primary">View</button>
+                      <button class="btn btn-primary view-invite" data-id="<%=invite._id %>">View</button>
                     </div>
                     <div class="col-md-4">
                       <form method="POST" action="/invites/<%= invite._id %>/revoke">
-  <button type="submit" class="btn btn-danger btn-revoke" data-id="<%=invite._id %>">Revoke Invite</button>
+  <button type="submit" class="btn btn-danger btn-revoke" data-id="<%=invite._id %>">Revoke</button>
 </form>
                     </div>
                     <div class="col-md-4">
@@ -36,7 +36,7 @@
         <% }) %>
       </div>
     
-      <%- include('../modals/carrierModal.ejs') %>
+      
       <div class="col-md-6">
         <h2>Carriers In Moderation</h2>
         <% carriers.forEach(carrier => { %>

@@ -22,7 +22,7 @@
         <tbody>
           <% invites.forEach(invite => { %>
             <tr>
-              <td><%= invite._id %></td>
+              <td id="inviteId"><%= invite._id %></td>
               <td><%= invite.email %></td>
               <td><%= invite.mcNumber %></td>
               <td><%= invite.createdBy %></td>
@@ -32,7 +32,7 @@
                 <% if(user.role==="admin") { %>
                     <form id="deleteInviteForm">
                       <input type="hidden" id="inviteId" value="<%=invite._id %>">
-                      <button type="button" class="btn btn-danger btn-sm" onclick="deleteInvite()">Delete</button>
+                      <button type="button" class="btn btn-danger btn-sm btn-delete" data-id="<%= invite._id %>" >Delete</button>
                   </form>
                     <% } %>
                 </td>

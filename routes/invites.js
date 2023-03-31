@@ -9,6 +9,9 @@ const Invite = require('../models/invite');
 const User = require('../models/user');
 const sendEmail = require('../helper/send-email');
 const paginate = require('express-paginate');
+const Log = require('../models/Log'); // Import the Log model
+const isAuthenticated = require('../middlewares/authMiddleware');
+const uaParser = require('ua-parser-js');
 // Other routes...
 
 router.post('/generate-invite-link', async (req, res) => {
@@ -47,33 +50,80 @@ sendEmail(email, "hello axper", "arachin emailna");
   }
 });
 
+router.get('/list',isAuthenticated, paginate.middleware(10, 50), async (req, res) => {
+
+
+  const filter = {};
+ const [inviteResults] = await Promise.all([
+    Invite.find(filter).sort({ updatedAt: 'desc' }).limit(req.query.limit).skip(req.skip).lean().exec(),
+  ]);
+
+  const [invitesCount] = await Promise.all([
+    Invite.countDocuments(filter),
+  ]);
+
+  const pageCountInvites = Math.ceil(invitesCount / req.query.limit);
+  res.render('invite/list', {
+    user: req.user,
+    title: "List of Invites",
+    invites: inviteResults,
+    pageCountInvites,
+    pagesInvites: paginate.getArrayPages(req)(3, pageCountInvites, req.query.page),
+  });
+});
+
+router.get('/:id',isAuthenticated, async (req, res) => {
+    
+  try {
+    const invite = await Invite.findById(req.params.id).populate('logs');
+    res.render('invite/show', { invite, logs: invite.logs, title: "Invite Details" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
+});
 
 
 
-router.get('/list', paginate.middleware(10, 50), async (req, res) => {
-  if (req.isAuthenticated()) {
 
-    const filter = {};
-   const [inviteResults] = await Promise.all([
-      Invite.find(filter).sort({ updatedAt: 'desc' }).limit(req.query.limit).skip(req.skip).lean().exec(),
-    ]);
+router.get('/log/:inviteId', async (req, res) => {
+  const inviteId = req.params.inviteId;
+  const ipAddress = req.ip;
+  const userAgent = req.headers['user-agent'];
+  const referrer = req.headers['referer'] || req.headers['referrer'];
+  const language = req.headers['accept-language'];
+  const accessTime = new Date();
+  
+  const ua = uaParser(userAgent);
+  const platform = ua.os.name || 'Unknown';
 
-    const [invitesCount] = await Promise.all([
-      Invite.countDocuments(filter),
-    ]);
+  try {
+    const invite = await Invite.findById(inviteId);
 
-    const pageCountInvites = Math.ceil(invitesCount / req.query.limit);
-    res.render('invite/list', {
-      user: req.user,
-      title: "List of Invites",
-      invites: inviteResults,
-      pageCountInvites,
-      pagesInvites: paginate.getArrayPages(req)(3, pageCountInvites, req.query.page),
-    });
-  } else {
-    res.render('dashboard', {
-      user: req.user,title: "Dashboard"
-    });
+    if (invite) {
+      const log = new Log({
+        invite: inviteId,
+        ipAddress,
+        userAgent,
+        referrer,
+        accessTime,
+        language,
+        platform,
+      });
+
+      await log.save();
+
+      // Add the log entry to the invite's logs array and save
+      invite.logs.push(log);
+      await invite.save();
+
+      res.status(200).json({ success: true, message: 'Data logged successfully.' });
+    } else {
+      res.status(404).json({ success: false, message: 'Invite not found.' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 

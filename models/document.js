@@ -9,8 +9,7 @@ const documentSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ['NOA', 'VOID check', 'insurance'],
-    required: true,
+    enum: ['NOA', 'VOID check', 'COI', 'W9', 'MCAuthority', 'Insurance', 'Other'],
   },
   path: {
     type: String,

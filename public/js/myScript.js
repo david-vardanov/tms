@@ -57,9 +57,69 @@ $('#generate-invite-form').submit((event) => {
 $('.view-button').click(function() {
   var id = $(this).data('id'); // Get the ID of the carrier from the data attribute
   $.get('/carriers/' + id, function(data) { // Make a GET request to the server to get the carrier data
-    console.log(id);
+
     $('#carrier-popup .modal-body').html(data); // Update the popup's body with the carrier/show.ejs template
     $('#carrier-popup').modal('show'); // Show the popup
+  });
+});
+
+
+$('.view-invite').click(function() {
+  var id = $(this).data('id'); // Get the ID of the carrier from the data attribute
+  $.get('/invites/' + id, function(data) { // Make a GET request to the server to get the carrier data
+
+    $('#invite-popup .modal-body').html(data); // Update the popup's body with the carrier/show.ejs template
+    $('#invite-popup').modal('show'); // Show the popup
+  });
+});
+
+
+$(document).ready(function() {
+  function handleModerateCheckbox() {
+    const $moderateCheckbox = $('#moderateCheckbox');
+    const $moderateButton = $('#moderateButton');
+
+    if ($moderateCheckbox.length > 0) {
+      $moderateButton.prop('disabled', !$moderateCheckbox.prop('checked'));
+      $moderateCheckbox.off('change', handleModerateCheckboxChange);
+      $moderateCheckbox.on('change', handleModerateCheckboxChange);
+    }
+  }
+
+  function handleModerateCheckboxChange() {
+    const $moderateCheckbox = $(this);
+    const $moderateButton = $('#moderateButton');
+    $moderateButton.prop('disabled', !$moderateCheckbox.prop('checked'));
+  }
+
+  const $carrierModal = $('#carrier-popup');
+
+  if ($carrierModal.length > 0) {
+    $carrierModal.on('shown.bs.modal', handleModerateCheckbox);
+    handleModerateCheckbox();
+  }
+});
+
+
+$(document).ready(function() {
+  $(".btn-delete").on("click", function(event) {
+    event.preventDefault();
+    const inviteId = $(this).data("id");
+
+    if (confirm("Are you sure you want to delete this invite?")) {
+      // If the user clicks "OK", send the request to the server
+      $.ajax({
+        type: "DELETE",
+        url: `/invites/${inviteId}`,
+        success: function() {
+          // Reload the page after the invite is deleted
+          location.reload();
+        },
+        error: function() {
+          alert("Error deleting invite. Please try again later.");
+        }
+      });
+    }
   });
 });
 
@@ -87,49 +147,64 @@ $(document).ready(function() {
   });
 });
 
-async function deleteCarrier() {
-  const carrierId = document.getElementById('carrierId').value;
-  const response = await fetch(`/carriers/${carrierId}`, {
-      method: 'DELETE',
-      headers: {
-          'Content-Type': 'application/json',
-      },
+
+$(document).ready(function() {
+  $(".btn-delete-carrier").on("click", function(event) {
+    event.preventDefault();
+    const carrierId = $(this).data("id");
+
+    if (confirm("Are you sure you want to delete this carrier?")) {
+      // If the user clicks "OK", send the request to the server
+      $.ajax({
+        type: "DELETE",
+        url: `/carriers/${carrierId}`,
+        success: function() {
+          // Reload the page after the invite is deleted
+          location.reload();
+        },
+        error: function() {
+          alert("Error deleting invite. Please try again later.");
+        }
+      });
+    }
   });
+});
 
-  const result = await response.json();
+$(document).ready(function() {
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const token = urlSearchParams.get('token');
 
-  if (result.success) {
-      alert(result.message);
-      // Redirect to another page, for example, the list of carriers
-      window.location.href = '/carriers/list';
-  } else {
-      alert(`Error: ${result.message}`);
-  }
-}
+  if (window.location.pathname === '/carriers/carrier-setup' && token) {
+    const inviteId = $('#inviteId').val();
 
-
-
-
-
-async function deleteInvite() {
-  const inviteId = document.getElementById('inviteId').value;
-  const response = await fetch(`/invites/${inviteId}`, {
-      method: 'DELETE',
-      headers: {
-          'Content-Type': 'application/json',
+    $.ajax({
+      type: 'GET',
+      url: `/invites/log/${inviteId}`,
+      success: function() {
+        console.log('Data logged successfully.');
       },
-  });
-
-  const result = await response.json();
-
-  if (result.success) {
-      alert(result.message);
-      // Redirect to another page, for example, the list of carriers
-      window.location.href = '/invites/list';
-  } else {
-      alert(`Error: ${result.message}`);
+      error: function() {
+        console.error('Error logging data. Please try again later.');
+      }
+    });
   }
-}
+});
+
+$(document).ready(function() {
+  $('input[type=radio][name=paymentMethod]').change(function() {
+    if (this.value == 'factoring') {
+      $('#voidCheckUpload').fadeOut(50, function() {
+        $('#noaUpload').fadeIn(50);
+      });
+    }
+    else if (this.value == 'quickpay') {
+      $('#noaUpload').fadeOut(50, function() {
+        $('#voidCheckUpload').fadeIn(50);
+      });
+    }
+  });
+});
+
 
 
 if($('.testimonials').length) {

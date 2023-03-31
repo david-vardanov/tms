@@ -1,0 +1,27 @@
+
+
+
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+                <th scope="col">Ref</th>
+                <th scope="col">Date</th>
+              <th scope="col">IP Address</th>
+              <th scope="col">Browser</th>
+              <th scope="col">Platform</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% logs.forEach(function(log) { %>
+              <tr>
+                <td><%= log.referrer %></td>
+                <td><%= log.accessTime %></td>
+                <td><%= log.ipAddress %></td>
+                <td><%= log.userAgent %></td>
+                <td><%= log.platform %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>

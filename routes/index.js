@@ -11,7 +11,7 @@ const router = express.Router();
 router.use('/', home);
 router.use('/', users);
 router.use('/users',isAuthenticated, users);
-router.use('/carriers',isAuthenticated, carriers);
+router.use('/carriers', carriers);
 router.use('/invites',isAuthenticated, invites);
 
 module.exports = router;

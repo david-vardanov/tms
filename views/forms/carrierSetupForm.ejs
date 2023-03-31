@@ -2,89 +2,148 @@
   <div class="row">
     <div class="col-md-6 offset-md-3">
       <div class="card">
-        <div class="card-header">
-          <h3>Carrier Setup</h3>
+        <div class="card-header my-1">
+          <h3>Carrier Setup for MC#<%= invite.mcNumber%></h3>
         </div>
         <div class="card-body">
           <form action="/carriers/submit-carrier-setup" method="post" enctype="multipart/form-data">
             <input type="hidden" name="token" value="<%= token %>">
-   
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" class="form-control" id="email" name="email" required>
+            <input type="hidden" id="inviteId" value="<%= invite._id %>">
+            <div class="row">
+              <div class="col-md-8">
+                <div class="form-group">
+                  <label for="name">Company Name</label>
+                  <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="phone">Phone</label>
+                  <input type="text" class="form-control" id="phone" name="phone">
+                </div>
+              </div>
+              <div class="col-md-8">
+                <div class="form-group">
+                  <label for="address">Address</label>
+                  <input type="text" class="form-control" id="address" name="address" required>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="address2">Address 2</label>
+                  <input type="text" class="form-control" id="address2" name="address2">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="city">City</label>
+                  <input type="text" class="form-control" id="city" name="city" required>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="state">State</label>
+                  <input type="text" class="form-control" id="state" name="state" required>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="zip">ZIP Code</label>
+                  <input type="text" class="form-control" id="zip" name="zip" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="einNumber">EIN Number</label>
+                  <input type="text" class="form-control" id="einNumber" name="einNumber">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="dotNumber">DOT Number</label>
+                  <input type="text" class="form-control" id="dotNumber" name="dotNumber">
+                </div>
+              </div>
+              <div class="col-md-3 my-3">
+                <div class="form-group">
+                  <label for="paymentMethod">Payment Method</label>           
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="paymentMethod" id="factoring" value="factoring" checked>
+                      <label class="form-check-label" for="factoring">
+                        Factoring
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay" value="quickpay">
+                      <label class="form-check-label" for="quickpay">
+                        Quickpay
+                      </label>
+                    </div>
+                </div>
+              </div>
+              <div class="col-md-8 my-3">
+                <div class="form-group" id="noaUpload">
+                  <label for="noa">NOA (Notice of Assignment)</label>
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="noa" name="noa">
+                  </div>
+                </div>
+                <div class="form-group" id="voidCheckUpload">
+                  <label for="noa">Void Check</label>
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="voidCheck" name="voidCheck">
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <label for="name">Company Name</label>
-              <input type="text" class="form-control" id="name" name="name" required>
+            <div class="row">
+              <h4>Documents</h4>
+              <div class="col-md-6">            
+              <div class="form-group my-1" id="coiUpload">
+                <label for="coi">COI (Certificate of Insurance)</label>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="coi" name="coi">
+                </div>
+              </div>
+              <div class="form-group my-1" id="insuranceUpload">
+                <label for="insurance">Liability Insurance Certificate</label>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="insurance" name="insurance">
+                </div>
+              </div>
+              <div class="form-group my-1" id="MCAuthorityUpload">
+                <label for="MCAuthority">MC Authority</label>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="MCAuthority" name="MCAuthority">
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <label for="phone">Phone</label>
-              <input type="text" class="form-control" id="phone" name="phone">
-            </div>
-            <div class="form-group">
-              <label for="address">Address</label>
-              <input type="text" class="form-control" id="address" name="address" required>
-            </div>
-            <div class="form-group">
-              <label for="address2">Address 2</label>
-              <input type="text" class="form-control" id="address2" name="address2">
-            </div>
-            <div class="form-group">
-              <label for="city">City</label>
-              <input type="text" class="form-control" id="city" name="city" required>
-            </div>
-            <div class="form-group">
-              <label for="state">State</label>
-              <input type="text" class="form-control" id="state" name="state" required>
-            </div>
-            <div class="form-group">
-              <label for="zip">ZIP Code</label>
-              <input type="text" class="form-control" id="zip" name="zip" required>
-            </div>
-            <div class="form-group">
-              <label for="einNumber">EIN Number</label>
-              <input type="text" class="form-control" id="einNumber" name="einNumber">
-            </div>
-            <div class="form-group">
-              <label for="dotNumber">DOT Number</label>
-              <input type="text" class="form-control" id="dotNumber" name="dotNumber">
-            </div>
-              
-            <div class="form-group">
-              <label for="paymentMethod">Payment Method</label>
-              <select class="form-control" id="paymentMethod" name="paymentMethod" required>
-                <option value="factoring">Factoring</option>
-                <option value="quickpay">Quickpay</option>
-              </select>
-            </div>
-            
-            
-            <div class="form-group">
-            <label for="coi">COI (Certificate of Insurance)</label>
-            <input type="file" class="form-control-file" id="coi" name="coi" required>
-            </div>
-
-            <div class="form-group">
-            <label for="liabilityInsuranceCertificate">Liability Insurance Certificate</label>
-            <input type="file" class="form-control-file" id="liabilityInsuranceCertificate" name="liabilityInsuranceCertificate" required>
-            </div>
-
-
-            <div class="form-group">
-            <label for="noa">NOA (Notice of Assignment)</label>
-            <input type="file" class="form-control-file" id="noa" name="noa" required>
-            </div>
-
-            <div class="form-group">
-            <label for="voidCheck">Void Check</label>
-            <input type="file" class="form-control-file" id="voidCheck" name="voidCheck" required>
-            </div>
-            
-            <button type="submit">Submit</button>
-
-            </form>
+            <div class="col-md-6">
+              <div class="form-group my-1" id="w9Upload">
+                <label for="w9">W9</label>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="w9" name="w9">
+                </div>
+              </div>
+              <div class="form-group my-1" id="w9Upload">
+                <label for="otherFile">Other</label>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="otherFile" name="other">
+                </div>
+              </div>
             </div>
             </div>
-            </div>
-            </div>
-            </div>
+            <button class="btn btn-primary my-3" type="submit">Submit</button>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

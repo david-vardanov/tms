@@ -6,6 +6,7 @@ const flash = require('express-flash');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const helmet = require('helmet');
+const crypto = require('crypto');
 
 
 require('dotenv').config();
@@ -22,22 +23,30 @@ db.connect();
 
 const app = express();
 
-// Add helmet middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src": [
-        "'self'",
-        "https://code.jquery.com",
-        "https://cdn.jsdelivr.net",
-        "https://cdnjs.cloudflare.com",
-        "https://maxcdn.bootstrapcdn.com"
-      ],
+app.use((req, res, next) => {
+  res.locals.nonce = crypto.randomBytes(16).toString('base64');
+  next();
+});
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        "script-src": [
+          "'self'",
+          "https://code.jquery.com",
+          "https://cdn.jsdelivr.net",
+          "https://cdnjs.cloudflare.com",
+          "https://maxcdn.bootstrapcdn.com",
+          (req, res) => `'nonce-${res.locals.nonce}'`, // Add this line
+        ],
+      },
     },
-  },
-  crossOriginEmbedderPolicy: false, // Add this line
-}));
+    crossOriginEmbedderPolicy: false,
+  })
+);
+
 
 app.use(session({
   secret: process.env.SESSION_SECRET,

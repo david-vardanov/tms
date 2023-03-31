@@ -19,6 +19,12 @@ const inviteSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  logs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Log',
+    },
+  ],
 }, { timestamps: true });
 
 const Invite = mongoose.model('Invite', inviteSchema);
