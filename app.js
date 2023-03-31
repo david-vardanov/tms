@@ -85,8 +85,8 @@ app.use(handleError);
 
 // Certificate
 const options = {
-  cert: fs.readFileSync('/root/agd/cert.pem'),
-  key: fs.readFileSync('/root/agd/key.pem')
+  cert: fs.readFileSync('/root/cert.pem'),
+  key: fs.readFileSync('/root/key.pem')
 };
 
 // Create HTTPS server
