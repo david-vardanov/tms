@@ -7,6 +7,8 @@ const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const helmet = require('helmet');
 const crypto = require('crypto');
+const https = require('https');
+const fs = require('fs');
 
 
 require('dotenv').config();
@@ -81,7 +83,24 @@ app.use(routes);
 
 app.use(handleError);
 
-const PORT = process.env.PORT || 3030;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Certificate
+const options = {
+  key: fs.readFileSync('/root/agd/privkey.pem'),
+  cert: fs.readFileSync('/root/agd/fullchain.pem')
+};
+
+// Create HTTPS server
+https.createServer(options, app)
+  .listen(443, function () {
+    console.log(`Server is running on port 443`);
+  });
+
+// Create HTTP server (optional)
+const http = express();
+http.get('*', function (req, res) {
+  res.redirect('https://' + req.headers.host + req.url);
 });
+http.listen(80, function () {
+  console.log(`Server is running on port 80`);
+});
+
