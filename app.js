@@ -85,8 +85,8 @@ app.use(handleError);
 
 // Certificate
 const options = {
-  key: fs.readFileSync('privkey.pem'),
-  cert: fs.readFileSync('fullchain.pem')
+  cert: fs.readFileSync('/root/ssl/cert.pem'),
+  key: fs.readFileSync('/root/ssl/key.pem')
 };
 
 // Create HTTPS server
