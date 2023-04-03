@@ -7,6 +7,14 @@ const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const helmet = require('helmet');
 const crypto = require('crypto');
+const https = require('https');
+const fs = require('fs');
+
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/chain.pem', 'utf8');
+
+
 
 
 require('dotenv').config();
@@ -72,16 +80,19 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static('uploads'));
 app.use(express.static('public'));
+app.use('/.well-known', express.static('public/.well-known'));
+
 
 app.use(flash());
 app.use(setUserLocal);
 app.use(methodOverride('_method'));
 
 app.use(routes);
-
 app.use(handleError);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+const credentials = { key: privateKey, cert: certificate, ca: ca };
+const httpsServer = https.createServer(credentials, app);
+
+httpsServer.listen(process.env.PORT, () => {
+  console.log('HTTPS Server running on port' + process.env.PORT);
 });
