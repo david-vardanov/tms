@@ -10,9 +10,9 @@ const crypto = require('crypto');
 const https = require('https');
 const fs = require('fs');
 
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/cert.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/chain.pem', 'utf8');
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/www.agdlogistics.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/www.agdlogistics.com/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/www.agdlogistics.com/chain.pem', 'utf8');
 
 
 
