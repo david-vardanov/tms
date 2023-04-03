@@ -1,0 +1,75 @@
+<% layout('layout.ejs') %>
+
+<section class="hero my-5">
+    <div class="hero__background"></div>
+    <div class="hero__content">
+      <h1 class="hero__title">Welcome to AGDLogistics.com</h1>
+      <p class="">Welcome to AGD Logistics, the premier freight brokerage company in the United States, specializing in Full Truckload (FTL), Less Than Truckload (LTL), and Partial Load transportation services. Founded on April 21, 2020, we have rapidly established ourselves as a reliable and customer-focused partner for all your shipping and transportation needs.</p>
+      <a href="#" class="hero__button">Get a Quote</a>
+    </div>
+  </section>
+  <section class="about-us my-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="section-title">Who We Are</h2>
+                <p>At AGD Logistics, we are a team of dedicated professionals who are committed to providing our customers with the highest level of service and support. We understand the challenges of the transportation industry and are here to help you navigate them.</p>
+                <p>Whether you are a shipper looking for reliable carriers or a carrier looking to grow your business, we have the expertise and resources to help you succeed.</p>
+            </div>
+            <div class="col-md-6">
+                <img src="images/about-us.jpg" alt="About Us" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</section>
+  <% if(user && user.role != "guest") { %>
+  <form id="generate-invite-form" method="post" action="/invites/generate-invite-link">
+    <div class="form-group">
+      <label for="mc-number-input">MC Number</label>
+      <input type="text" class="form-control" id="mc-number-input" name="mcNumber" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Generate Invite Link</button>
+  </form>
+  <div id="invite-url-preview"></div>
+  <% } else { %> 
+    
+    <% } %>
+  <!-- Add this to your HTML file -->
+  <div class="section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <div class="card h-100 shadow-sm hover-shadow">
+            <div class="card-body text-center">
+              <i class="bi bi-people feature-icon"></i>
+              <h3 class="card-title mb-3">For Business</h3>
+              <h6 class="card-subtitle mb-2 font-weight-bold">Freight Management</h6>
+              <p class="card-text">Let us manage the entire transportation process, from arranging pick-ups and deliveries to tracking shipments and resolving any issues that may arise.</p>
+              <a href="/business" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+        </div>
+      
+        <div class="col-md-6 mb-4">
+          <div class="card h-100 shadow-sm hover-shadow">
+            <div class="card-body text-center">
+              <i class="bi bi-truck feature-icon"></i>
+              <h3 class="card-title mb-3">For Carriers</h3>
+              <h6 class="card-subtitle mb-2 font-weight-bold">Carrier Sourcing</h6>
+              <p class="card-text">Let us find and vet reliable carriers that can transport freight for you, negotiate rates, and ensure compliance with regulations.</p>
+              <a href="/carriers" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+        </div>
+      
+      </div>
+
+    </div>
+  </div>
+  
+  
+  </div>
+  <%- include('partials/services.ejs') %>
+  <%- include('partials/testimonials.ejs') %>
+  
+  

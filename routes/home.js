@@ -38,7 +38,7 @@ router.get('/', paginate.middleware(10, 50), async (req, res) => {
 
   } else {
     res.render('homepage', {
-      user: req.user,title: "Homepage"
+      user: req.user,title: "Under Construction"
     });
   }
 });
