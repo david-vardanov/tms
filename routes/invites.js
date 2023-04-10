@@ -153,7 +153,7 @@ router.delete('/:id', async (req, res) => {
 
 
 router.post('/:id/revoke', async (req, res, next) => {
-  console.log((req.params.id))
+  // console.log((req.params.id))
   try {
     const invite = await Invite.findById(req.params.id);
     if (!invite) {
@@ -161,7 +161,7 @@ router.post('/:id/revoke', async (req, res, next) => {
     }
     invite.isExpired = true
     await invite.save();
-    console.log(invite);
+    // console.log(invite);
     return res.redirect('/');
   } catch (error) {
     next(error);

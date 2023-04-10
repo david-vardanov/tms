@@ -125,6 +125,8 @@ $(document).ready(function() {
 
 
 
+
+
 $(document).ready(function() {
   $(".btn-revoke").on("click", function(event) {
     event.preventDefault();
@@ -136,16 +138,22 @@ $(document).ready(function() {
         type: "POST",
         url: `/invites/${inviteId}/revoke`,
         success: function() {
-          // Reload the page after the invite is revoked
+          // Reload the page after the invite is deleted
           location.reload();
         },
         error: function() {
           alert("Error revoking invite. Please try again later.");
         }
+      }).fail(function(xhr, status, error) {
+        console.log(error);
       });
     }
   });
 });
+
+
+
+
 
 
 $(document).ready(function() {
@@ -169,6 +177,29 @@ $(document).ready(function() {
     }
   });
 });
+
+$(document).ready(function() {
+  $(".btn-delete-user").on("click", function(event) {
+    event.preventDefault();
+    const userId = $(this).data("id");
+
+    if (confirm("Are you sure you want to delete this user?")) {
+      // If the user clicks "OK", send the request to the server
+      $.ajax({
+        type: "DELETE",
+        url: `/users/${userId}`,
+        success: function() {
+          // Reload the page after the user is deleted
+          location.reload();
+        },
+        error: function() {
+          alert("Error deleting user. Please try again later.");
+        }
+      });
+    }
+  });
+});
+
 
 $(document).ready(function() {
   const urlSearchParams = new URLSearchParams(window.location.search);

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
+const bcrypt = require("bcrypt");
 const paginate = require('express-paginate');
 const User = require('../models/user');
 const { validateLogin } = require('../middlewares/validation');
@@ -44,6 +45,37 @@ router.route('/logout')
     res.redirect('/');
   });
 
+  //NEW USER
+  //GET
+  router.get("/new", (req, res) => {
+    res.render("user/new", { title: "Create User" });
+  });
+  //POST
+  router.post("/", async (req, res) => {
+    const { username, email, password, role } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+  
+    try {
+      const user = new User({
+        username,
+        email,
+        password: hashedPassword,
+        role,
+        createdBy: req.user._id,
+        updatedBy: req.user._id,
+      });
+  
+      await user.save();
+  
+      res.redirect("/users/list");
+    } catch (error) {
+      console.log(error);
+      res.render("user/new", {
+        title: "Create User",
+        error: "Failed to create user. Please try again.",
+      });
+    }
+  });
 
 
   router.get('/list',isAuthenticated, paginate.middleware(10, 50), async (req, res) => {
@@ -71,6 +103,27 @@ router.route('/logout')
       res.render('dashboard', {
         user: req.user,title: "Dashboard"
       });
+    }
+  });
+
+  router.delete('/:id', async (req, res) => {
+    try {
+      const userId = req.params.id;
+      
+      // Find the carrier by its ID
+      const user = await User.findById(userId);
+  
+      if (user) {
+         
+        // Remove the carrier from the database
+        await User.findByIdAndRemove(userId);
+        res.status(200).json({ success: true, message: 'User deleted successfully.' });
+      } else {
+        res.status(404).json({ success: false, message: 'User not found.' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Internal server error.' });
     }
   });
 

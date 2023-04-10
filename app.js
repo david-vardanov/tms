@@ -49,6 +49,7 @@ app.use(
           "https://maxcdn.bootstrapcdn.com",
           (req, res) => `'nonce-${res.locals.nonce}'`, // Add this line
         ],
+        "frame-src": ["'self'", "https://www.google.com"]
       },
     },
     crossOriginEmbedderPolicy: false,
@@ -93,6 +94,10 @@ app.use(handleError);
 const credentials = { key: privateKey, cert: certificate, ca: ca };
 const httpsServer = https.createServer(credentials, app);
 
-httpsServer.listen(process.env.SPORT, () => {
-  console.log('HTTPS Server running on port' + process.env.SPORT);
+httpsServer.listen(process.env.PORT, () => {
+  console.log('HTTPS Server running on port' + process.env.PORT);
 });
+
+// app.listen(process.env.PORT, () => {
+//   console.log('Server is running on port ' + process.env.PORT);
+// });

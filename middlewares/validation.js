@@ -17,6 +17,13 @@ const carrierSetupSchema = Joi.object({
   liabilityInsuranceCertificate: Joi.any().optional(),
   noa: Joi.any().optional(),
   voidCheck: Joi.any().optional(),
+  documents: Joi.array().items(
+    Joi.object({
+      type: Joi.string().valid('coi', 'noa', 'voidCheck', 'MCAuthority', 'w9', 'other' ),
+      url: Joi.string().required(),
+      name: Joi.string().required()
+    })
+  ).optional()
 });
 
 const loginSchema = Joi.object({

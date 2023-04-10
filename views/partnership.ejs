@@ -1,11 +1,16 @@
 <% layout('layout.ejs') %>
 <div class="container">
-    <!-- Hero section -->
-    <header class="jumbotron text-center">
+<section class="hero partnership my-5">
+    <div class="hero__background"></div>
+    <div class="hero__content">
         <h1>AGD Logistics - Your Trusted Freight Partner</h1>
         <p>Let us handle your freight transportation needs and experience the difference!</p>
-    </header><!-- Benefits section -->
-    <section class="my-5">
+    </div>
+  </section>
+
+
+    <!-- Benefits section -->
+    <section class="my-5 partnership">
         <h2 class="text-center mb-4">Why Choose AGD Logistics?</h2>
         <div class="row">
             <!-- Benefit 1 -->
@@ -54,19 +59,7 @@
         </div>
     </section>
     <!-- Testimonials section -->
-<section class="my-5">
-    <h4 class="text-center mb-4">Testimonials</h4>
-    <div id="testimonials" class="carousel slide" data-ride="carousel">
-        <ol class="carousel-indicators"></ol>
-        <div class="carousel-inner"></div>
-        <a class="text-black carousel-control-prev" href="#testimonials" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon sr-only" aria-hidden="true"></span>
-        </a>
-        <a class="text-black carousel-control-next" href="#testimonials" role="button" data-slide="next">
-            <span class="carousel-control-next-icon sr-only" aria-hidden="true"></span>
-        </a>
-    </div>  
-</section>
+    <%- include('partials/testimonials.ejs') %>
 
 <!-- Call to action section -->
 <section class="text-center my-5">

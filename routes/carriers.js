@@ -74,70 +74,90 @@ router.get('/carrier-setup', async (req, res) => {
 
 
 // POST
-router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'liabilityInsuranceCertificate' }, { name: 'noa' }, { name: 'voidCheck' }]),validateCarrierSetup, async (req, res) => {
+router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'liabilityInsuranceCertificate' }, { name: 'noa' }, { name: 'voidCheck' }, {name: 'insurance'}, {name: 'MCAuthority'}, {name: 'w9'}, {name: 'other'}]), validateCarrierSetup, async (req, res) => {
   try {
-
-
     const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, documentExpirationDate } = sanitizeInput(req.body, req);
     const files = req.files;
-
     const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
     const invite = await Invite.findById(inviteId);
-
+    console.log(req.user);
     const newCarrier = new Carrier({
       name, mcNumber: invite.mcNumber, email, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod,
-      createdBy: req.user._id, status: 'inModeration'
+      createdBy: invite.createdBy, 
+      status: 'inModeration'
     });
 
-    const documentTypes = ['coi', 'liabilityInsuranceCertificate', 'noa', 'voidCheck'];
+//this 
+const documentTypes = ['coi', 'liabilityInsuranceCertificate', 'noa', 'voidCheck', 'insurance', 'MCAuthority', 'w9', 'other'  ];
 
-    documentTypes.forEach((type) => {
-      if (files[type]) {
-        const file = files[type][0];
-        const newDocument = {
-          type,
-          url: file.path,
-          name,
-        };
+documentTypes.forEach((type) => {
+  if (files[type]) {
+    const file = files[type][0];
+    const newDocument = {
+      type,
+      url: file.path,
+      name: name + "-" + invite.mcNumber + "-" + type,
+    };
 
-        newCarrier.documents.push(newDocument);
-      }
-    });
+    newCarrier.documents.push(newDocument);
+  }
+});
 
-    
+if (files.insurance) {
+  const newDocument = {
+    type: 'liabilityInsuranceCertificate',
+    url: files.insurance[0].path,
+    name: name + "-" + invite.mcNumber,
+  };
 
-    // User must provide COI and liability insurance certificate no matter what payment method they choose
-    if (files.coi) {
-      const coi = {
-        type: 'coi',
-        url: files.coi[0].path,
-        name: name,
-      };
+  newCarrier.documents.push(newDocument);
+}
 
-      newCarrier.documents.push(coi);
-    }
+if (files.MCAuthority) {
+  const newDocument = {
+    type: 'noa',
+    url: files.MCAuthority[0].path,
+    name: name + "-" + invite.mcNumber,
+  };
 
-    if (files.liabilityInsuranceCertificate) {
-      const liabilityInsuranceCertificate = {
-        type: 'liabilityInsuranceCertificate',
-        url: files.liabilityInsuranceCertificate[0].path,
-        name,
-      };
+  newCarrier.documents.push(newDocument);
+}
 
-      newCarrier.documents.push(liabilityInsuranceCertificate);
-    }
+if (files.w9) {
+  const newDocument = {
+    type: 'w9',
+    url: files.w9[0].path,
+    name: name + "-" + invite.mcNumber,
+  };
+
+  newCarrier.documents.push(newDocument);
+}
+
+if (files.other) {
+  const newDocument = {
+    type: 'other',
+    url: files.other[0].path,
+    name: name + "-" + invite.mcNumber,
+  };
+
+  newCarrier.documents.push(newDocument);
+}
+
+//this
+
 
     await newCarrier.save();
     invite.isExpired = true;
     await invite.save();
     req.flash('success', 'Carrier setup submitted successfully. Please wait for approval.');
-    res.render('setupComplete', { title: "Setup Complete" });
+    res.render('setupComplete', { title: "Setup Complete", user: invite.createdBy });
   } catch (err) {
     console.error(err);
     req.flash('error', 'An error occurred while submitting the carrier setup.');
     res.json(err);
   }
 });
+
 
 
       
@@ -202,7 +222,8 @@ router.get('/setup-complete', async (req, res) => {
       const carrier = await Carrier.findById(req.params.id).populate('documents');
         const invite = await Invite.find({mcNumber: carrier.mcNumber}).populate('logs');
         const firstDocument = carrier.documents[0];
-        console.log(carrier.documents)
+
+
       res.render('carrier/show', { invite, carrier, logs: invite.logs, documents: carrier.documents, title: "Carrier Details" });
     } catch (err) {
       console.error(err);
@@ -253,28 +274,35 @@ router.get('/:id/edit',isAuthenticated, async (req, res) => {
 });
 
 
-  router.post('/:id/moderate', async (req, res) => {
-    try {
-      const carrierId = req.params.id;
-      const carrier = await Carrier.findById(carrierId);
-  
-      if (carrier) {
-        carrier.status = 'Active';
-        await carrier.save();
-  
-        // Generate and save the PDF document
-        const fileName = `./docs/carrierMc/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
-        generateBrokerCarrierAgreement(carrier, fileName);
-        res.redirect('/');
+router.post('/:id/moderate', async (req, res) => {
+  try {
+    const carrierId = req.params.id;
+    const carrier = await Carrier.findById(carrierId);
 
-      } else {
-        res.status(404).json({ success: false, message: 'Carrier not found.' });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: 'Internal server error.' });
+    if (carrier) {
+      carrier.status = 'Active';
+
+      // Generate and save the PDF document
+      const fileName = `./docs/carrierMc/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
+      generateBrokerCarrierAgreement(carrier, fileName);
+
+      // Save the URL of the Carrier Broker Agreement document
+      const carrierAgreementUrl = `/docs/carrierMc/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
+      carrier.carrierAgreementUrl = carrierAgreementUrl;
+
+      await carrier.save();
+
+      res.redirect('/');
+
+    } else {
+      res.status(404).json({ success: false, message: 'Carrier not found.' });
     }
-  });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+});
+
 
 
 

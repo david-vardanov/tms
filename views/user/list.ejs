@@ -51,25 +51,25 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <%users.forEach(user => { %>
+                      <%users.forEach(userItem => { %>
                         <tr>
                           
-                          <td><%=user.username %></td>
-                          <td><%=user.email %></td>
+                          <td><%=userItem.username %></td>
+                          <td><%=userItem.email %></td>
         
 
-                          <td><%=user.role %></td>
+                          <td><%=userItem.role %></td>
                           <td>
                             <div class="row">
                               <div class="col-md-2">
-                                <button class="btn btn-primary btn-sm view-button" data-id="<%=user._id %>">Show</button>
+                                <button class="btn btn-primary btn-sm view-button" data-id="<%=userItem._id %>">Show</button>
                               </div>
-                              <div class="col-md-2"><% if(user.role==="admin" || "moderator") { %><a class="btn btn-primary btn-sm mx-1" href="/users/<%=user._id %>/edit"> Edit</a><% } %></div>
+                              <div class="col-md-2"><% if(user.role==="admin" || "moderator") { %><a class="btn btn-primary btn-sm mx-1" href="/users/<%=userItem._id %>/edit"> Edit</a><% } %></div>
                               <div class="col-md-2">
                                 <% if(user.role==="admin") { %>
                                   <form id="deleteUserForm">
-                                    <input type="hidden" id="userId" value="<%=user._id %>">
-                                    <button type="button" class="btn btn-danger btn-sm " onclick="deleteUser()">Delete</button>
+                                    <input type="hidden" id="userId" value="<%=userItem._id %>">
+                                    <button type="button" class="btn btn-danger btn-sm btn-delete-user" data-id="<%= userItem._id %>" >Delete</button>
                                   </form>
                                 <% } %>
                               </div>

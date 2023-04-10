@@ -70,7 +70,7 @@
                     <% if(user.role==="admin") { %>
                       <form id="deleteCarrierForm">
                         <input type="hidden" id="carrierId" value="<%=carrier._id %>">
-                        <button type="button" onclick="deleteCarrier()" class="btn btn-danger btn-sm">Delete Carrier</button>
+                        <button type="button" class="btn btn-danger btn-sm btn-delete-carrier" data-id="<%= carrier._id %>" >Delete</button>
                       </form>
                     <% } %>
                   </div>
