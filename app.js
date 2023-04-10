@@ -94,7 +94,7 @@ app.use(handleError);
 const credentials = { key: privateKey, cert: certificate, ca: ca };
 const httpsServer = https.createServer(credentials, app);
 
-httpsServer.listen(process.env.PORT, () => {
+httpsServer.listen(process.env.SPORT, () => {
   console.log('HTTPS Server running on port' + process.env.PORT);
 });
 
