@@ -65,61 +65,18 @@ router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'li
 const documentTypes = ['coi', 'liabilityInsuranceCertificate', 'noa', 'voidCheck', 'insurance', 'MCAuthority', 'w9', 'other'  ];
 let documentUrlPrefix = `${process.env.ENDPOINT}/${process.env.S3_BUCKET_NAME}`;
 
+
 documentTypes.forEach((type) => {
   if (files[type]) {
-    const file = files[type][0];
-    const newDocument = {
-      type,
-      url: `${documentUrlPrefix}/${r.key}`,
-      name: name + "-" + invite.mcNumber + "-" + type,
-    };
-
-    newCarrier.documents.push(newDocument);
+    let file = files[type][0],
+      newDocument = {
+        type,
+        url: r.location, // Update this line
+        name: i + "-" + invite.mcNumber + "-" + type,
+      };
+    newCarrier.documents.push(t);
   }
 });
-
-if (files.insurance) {
-  const newDocument = {
-    type: 'liabilityInsuranceCertificate',
-    url: files.insurance[0].path,
-    name: name + "-" + invite.mcNumber,
-  };
-
-  newCarrier.documents.push(newDocument);
-}
-
-if (files.MCAuthority) {
-  const newDocument = {
-    type: 'noa',
-    url: files.MCAuthority[0].path,
-    name: name + "-" + invite.mcNumber,
-  };
-
-  newCarrier.documents.push(newDocument);
-}
-
-if (files.w9) {
-  const newDocument = {
-    type: 'w9',
-    url: files.w9[0].path,
-    name: name + "-" + invite.mcNumber,
-  };
-
-  newCarrier.documents.push(newDocument);
-}
-
-if (files.other) {
-  const newDocument = {
-    type: 'other',
-    url: files.other[0].path,
-    name: name + "-" + invite.mcNumber,
-  };
-
-  newCarrier.documents.push(newDocument);
-}
-
-//this
-
 
     await newCarrier.save();
     invite.isExpired = true;
@@ -134,12 +91,6 @@ if (files.other) {
 });
 
 
-
-      
-
-        
-
-      
 router.get('/setup-complete', async (req, res) => {
   res.render('setupComplete', { title: "Setup Complete" });
 });
