@@ -71,12 +71,15 @@ documentTypes.forEach((type) => {
     let file = files[type][0],
       newDocument = {
         type,
-        url: file.location, // Update this line
-        name: i + "-" + invite.mcNumber + "-" + type,
+        url: r.location, // Update this line
+        name: name + "-" + invite.mcNumber + "-" + type,
       };
     newCarrier.documents.push(t);
   }
 });
+
+//this
+
 
     await newCarrier.save();
     invite.isExpired = true;
@@ -89,6 +92,10 @@ documentTypes.forEach((type) => {
     res.json(err);
   }
 });
+
+
+
+      
 
 
 router.get('/setup-complete', async (req, res) => {
