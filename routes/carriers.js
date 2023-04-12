@@ -74,7 +74,7 @@ documentTypes.forEach((type) => {
         url: file.location, // Update this line
         name: name + "-" + invite.mcNumber + "-" + type,
       };
-    newCarrier.documents.push(t);
+    newCarrier.documents.push(newDocument);
   }
 });
 
