@@ -71,7 +71,7 @@ documentTypes.forEach((type) => {
     let file = files[type][0],
       newDocument = {
         type,
-        url: r.location, // Update this line
+        url: file.location, // Update this line
         name: i + "-" + invite.mcNumber + "-" + type,
       };
     newCarrier.documents.push(t);
