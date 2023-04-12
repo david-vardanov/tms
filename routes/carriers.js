@@ -1,11 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const fs = require('fs');
-const path = require('path');
 const moment = require('moment');
 const Carrier = require('../models/carrier');
-
 const Invite = require('../models/invite');
 const Business = require('../models/business');
 const User = require('../models/user');
@@ -16,37 +13,14 @@ const { sanitizeInput } = require('../middlewares/sanitize');
 const { validateCarrierSetup } = require('../middlewares/validation');
 const { generateBrokerCarrierAgreement } = require('../helper/pdfGenerator');
 const isAuthenticated = require('../middlewares/authMiddleware');
+const { uploadFileToSpaces } = require("../helper/awsSdk");
+const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
 
-
-
-
-
-
-
-const multer = require('multer');
 const ConnectMongoDBSession = require('connect-mongodb-session');
 
 //POST REQUEST FOR CARRIER SETUP
-const storage = multer.diskStorage({
-  destination: async (req, file, cb) => {
-    const { token } = req.body;
-    const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
-    const invite = await Invite.findById(inviteId);
 
-    const mcNumber = invite.mcNumber || 'unknown'; // Use req.mcNumber instead of req.user.mcNumber
-
-    const dirPath = `./docs/carrierMc/${mcNumber}`;
-    fs.mkdirSync(dirPath, { recursive: true });
-    cb(null, dirPath);
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
-  }
-});
-
-const upload = multer({ storage });
-
-
+const { upload } = require('../helper/awsSdk');
 // Other routes...
 
 router.get('/carrier-setup', async (req, res) => {
@@ -89,13 +63,14 @@ router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'li
 
 //this 
 const documentTypes = ['coi', 'liabilityInsuranceCertificate', 'noa', 'voidCheck', 'insurance', 'MCAuthority', 'w9', 'other'  ];
+let documentUrlPrefix = `${process.env.ENDPOINT}/${process.env.S3_BUCKET_NAME}`;
 
 documentTypes.forEach((type) => {
   if (files[type]) {
     const file = files[type][0];
     const newDocument = {
       type,
-      url: file.path,
+      url: `${documentUrlPrefix}/${r.key}`,
       name: name + "-" + invite.mcNumber + "-" + type,
     };
 
