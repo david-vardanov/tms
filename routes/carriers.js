@@ -14,13 +14,15 @@ const { validateCarrierSetup } = require('../middlewares/validation');
 const { generateBrokerCarrierAgreement } = require('../helper/pdfGenerator');
 const isAuthenticated = require('../middlewares/authMiddleware');
 const { uploadFileToSpaces } = require("../helper/awsSdk");
+const crypto = require('crypto');
 const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
 
 const ConnectMongoDBSession = require('connect-mongodb-session');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const { GetObjectCommand } = require('@aws-sdk/client-s3');
 
 //POST REQUEST FOR CARRIER SETUP
-
-const { upload } = require('../helper/awsSdk');
+const { upload, s3Client } = require('../helper/awsSdk');
 // Other routes...
 
 router.get('/carrier-setup', async (req, res) => {
@@ -63,8 +65,6 @@ router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'li
 
 //this 
 const documentTypes = ['coi', 'liabilityInsuranceCertificate', 'noa', 'voidCheck', 'insurance', 'MCAuthority', 'w9', 'other'  ];
-let documentUrlPrefix = `${process.env.ENDPOINT}/${process.env.S3_BUCKET_NAME}`;
-
 
 documentTypes.forEach((type) => {
   if (files[type]) {
@@ -79,8 +79,6 @@ documentTypes.forEach((type) => {
 });
 
 //this
-
-
     await newCarrier.save();
     invite.isExpired = true;
     await invite.save();
@@ -92,10 +90,6 @@ documentTypes.forEach((type) => {
     res.json(err);
   }
 });
-
-
-
-      
 
 
 router.get('/setup-complete', async (req, res) => {
@@ -149,20 +143,67 @@ router.get('/setup-complete', async (req, res) => {
   
   
   //carrier show
-  router.get('/:id',isAuthenticated, async (req, res) => {
+
+// routes/carriers.js
+router.get('/:id', isAuthenticated, async (req, res) => {
+  try {
+    const carrier = await Carrier.findById(req.params.id).populate('documents');
+    const invite = await Invite.find({ mcNumber: carrier.mcNumber }).populate('logs');
     
-    try {
-      const carrier = await Carrier.findById(req.params.id).populate('documents');
-        const invite = await Invite.find({mcNumber: carrier.mcNumber}).populate('logs');
-        const firstDocument = carrier.documents[0];
+    // Generate pre-signed URLs for each document
+    const documents = await Promise.all(
+      carrier.documents.map(async (document) => {
+        const fileKey = document.url; // Use the relative path as the file key
+        console.log(document.url);
+        const command = new GetObjectCommand({
+          Bucket: 'agdfiles',
+          Key: fileKey,
+        });
+
+        const url = await getSignedUrl(s3Client, command, { expiresIn: 60 * 5 }); // URL will expire in 5 minutes
+        return {
+          ...document.toObject(),
+          preSignedUrl: url
+        };
+      })
+    );
+
+    res.render('carrier/show', { invite, carrier, logs: invite.logs, documents, title: 'Carrier Details' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
+});
 
 
-      res.render('carrier/show', { invite, carrier, logs: invite.logs, documents: carrier.documents, title: "Carrier Details" });
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Internal server error');
-    }
-  });
+
+//   // routes/carriers.js
+// router.get('/:id/document/:documentId', isAuthenticated, async (req, res) => {
+//   const documentId = req.params.documentId;
+
+//   try {
+//     const document = await Document.findById(documentId);
+
+//     if (!document) {
+//       return res.status(404).json({ message: 'Document not found' });
+//     }
+
+//     // Generate pre-signed URL
+//     const params = {
+//       Bucket: 'your-bucket-name',
+//       Key: document.key, // Assuming you store the file key in your Document model
+//       Expires: 60 * 5 // URL will expire in 5 minutes
+//     };
+
+//     const url = s3.getSignedUrl('getObject', params);
+
+//     return res.json({ url });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
+
 
 
   //update carrier route

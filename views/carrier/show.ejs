@@ -1,5 +1,5 @@
 
-    
+
 
         <h5><%=carrier.name %> || MC#<%= carrier.mcNumber %></h5>
         
@@ -49,8 +49,8 @@
                       <tr>
                         <td><%= document.type %></td>
                         <td>
-                          <% if (document.url) { %>
-                            <a href="<%= document.url %>" target="_blank">Open</a>
+                          <% if (document.preSignedUrl) { %>
+                            <a href="<%= document.preSignedUrl %>" target="_blank">Open</a>
                           <% } else { %>
                             N/A
                           <% } %>
@@ -87,6 +87,7 @@
             <div class="col-md-4">
               <button class="btn btn-secondary btn-sm">Edit</button>
             </div>
+          </div>
           </div>
         
         

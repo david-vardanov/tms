@@ -127,6 +127,7 @@ $(document).ready(function() {
 
 
 
+
 $(document).ready(function() {
   $(".btn-revoke").on("click", function(event) {
     event.preventDefault();
@@ -150,6 +151,7 @@ $(document).ready(function() {
     }
   });
 });
+
 
 
 
