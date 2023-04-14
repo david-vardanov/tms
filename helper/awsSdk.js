@@ -15,6 +15,8 @@ const s3 = new S3({
     secretAccessKey: process.env.S3_SECRET_KEY,
   },
   //requestHandler: new https.Agent({ rejectUnauthorized: false }).request,
+  forcePathStyle: true // Add this line
+
 });
 
 const upload = multer({

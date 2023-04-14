@@ -171,16 +171,23 @@ router.get("/:id/documents/:docId/view", isAuthenticated, async (req, res) => {
   try {
     let carrier = await Carrier.findById(req.params.id);
     let document = carrier.documents.id(req.params.docId);
-
+    
     if (!document) return res.status(404).send("Document not found");
-
+    console.log(process.env.S3_BUCKET_NAME);
+    console.log(process.env.S3_REGION);
     let objectKey = document.url;
+    console.log(objectKey);
     let getObjectParams = { 
       Bucket: process.env.S3_BUCKET_NAME, 
-      Key: objectKey,
-      region: process.env.S3_REGION 
+      Key: objectKey
     };
-    let presignedUrl = await getSignedUrl(s3Client, getObjectParams, { expiresIn: 300 });
+    let presignedUrl;
+    try {
+      presignedUrl = await getSignedUrl(s3Client, getObjectParams, { expiresIn: 300 });
+    } catch (err) {
+      console.error("Error generating presigned URL:", err);
+      return res.status(500).send("Internal server error");
+    }
 
     res.json({ preSignedUrl: presignedUrl });
   } catch (err) {
