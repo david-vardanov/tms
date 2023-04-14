@@ -83,12 +83,22 @@ $('.view-invite').click(function() {
 });
 
 
-$('.view-button').click(function() {
-  var id = $(this).data('id'); // Get the ID of the carrier from the data attribute
-  $.get('/carriers/' + id, function(data) { // Make a GET request to the server to get the carrier data
+$(document).ready(function () {
+  $(".view-document").on("click", function () {
+    const carrierId = $(this).data("carrier-id");
+    const docId = $(this).data("doc-id");
+    const url = `/carriers/${carrierId}/documents/${docId}/view`;
 
-    $('#carrier-popup .modal-body').html(data); // Update the popup's body with the carrier/show.ejs template
-    $('#carrier-popup').modal('show'); // Show the popup
+    // Create a new window with the document URL
+    window.open(url, "_blank");
+  });
+});
+
+$(".view-button").click(function () {
+  var id = $(this).data("id");
+  $.get("/carriers/" + id, function (data) {
+    $("#carrier-popup .modal-body").html(data);
+    $("#carrier-popup").modal("show");
   });
 });
 

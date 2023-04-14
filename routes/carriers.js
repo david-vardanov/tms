@@ -21,7 +21,7 @@ const ConnectMongoDBSession = require('connect-mongodb-session');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { upload, s3Client } = require('../helper/awsSdk');
 const { GetObjectCommand } = require('@aws-sdk/client-s3');
-
+const { URL } = require('url');
 
 
 //POST REQUEST FOR CARRIER SETUP
@@ -74,7 +74,7 @@ documentTypes.forEach((type) => {
     let file = files[type][0],
       newDocument = {
         type,
-        url: file.location, // Update this line
+        url: new URL(file.location).pathname.substring(1),
         name: name + "-" + invite.mcNumber + "-" + type,
       };
     newCarrier.documents.push(newDocument);
@@ -167,26 +167,35 @@ router.get("/:id", isAuthenticated, async (req, res) => {
 });
 
 
-
 router.get("/:id/documents/:docId/view", isAuthenticated, async (req, res) => {
   try {
-    const carrier = await Carrier.findById(req.params.id);
-    const document = carrier.documents.id(req.params.docId);
+    let carrier = await Carrier.findById(req.params.id);
+    let document = carrier.documents.id(req.params.docId);
 
-    if (!document) {
-      return res.status(404).send("Document not found");
-    }
+    if (!document) return res.status(404).send("Document not found");
 
-    const s3Key = document.url;
-    const s3Command = new GetObjectCommand({ Bucket: process.env.S3_BUCKET_NAME, Key: s3Key });
-    const preSignedUrl = await getSignedUrl(s3Client, s3Command, { expiresIn: 300 });
+    let getObjectParams = {
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: document.url,
+    };
 
-    res.json({ preSignedUrl });
+    // Get the object from the S3 client
+    s3Client.getObject(getObjectParams, (error, data) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+      } else {
+        // Set the proper content type and send the data as a response
+        res.set("Content-Type", data.ContentType);
+        res.send(data.Body);
+      }
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal server error");
   }
 });
+
 
 
 
