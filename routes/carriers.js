@@ -175,7 +175,7 @@ router.get("/:id/documents/:docId/view", isAuthenticated, async (req, res) => {
     if (!document) return res.status(404).send("Document not found");
 
     let objectKey = document.url;
-    let getObjectParams = { Bucket: process.env.S3_BUCKET_NAME, Key: objectKey };
+    let getObjectParams = { Bucket: process.env.S3_BUCKET_NAME, Key: objectKey, Region: process.env.S3_REGION };
     let presignedUrl = await getSignedUrl(s3Client, getObjectParams, { expiresIn: 300 });
 
     res.json({ preSignedUrl: presignedUrl });
