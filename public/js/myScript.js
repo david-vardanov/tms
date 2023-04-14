@@ -70,6 +70,8 @@ $('.view-invite').click(function() {
 
 $(document).ready(function () {
   $(".download-document").on("click", function () {
+    $("#globalLoader").show();
+
     const carrierId = $(this).data("carrier-id");
     const docId = $(this).data("doc-id");
     const url = `/carriers/${carrierId}/documents/${docId}/view`;
@@ -80,6 +82,7 @@ $(document).ready(function () {
       downloadLink.href = presignedUrl;
       downloadLink.download = "document"; // You can set this to the desired filename
       document.body.appendChild(downloadLink);
+      $("#globalLoader").hide();
       downloadLink.click();
       document.body.removeChild(downloadLink);
     }).fail(function () {
@@ -90,13 +93,15 @@ $(document).ready(function () {
 });
 
 $(".view-button").click(function () {
-  $("#carrierModalLoader").show();
+  $("#globalLoader").show();
+
   var id = $(this).data("id");
   $.get("/carriers/" + id, function (data) {
     $("#carrier-popup .modal-body").html(data);
     $("#carrier-popup").modal("show");
   });
-  $("#carrierModalLoader").hide();
+  $("#globalLoader").hide();
+
 
 });
 
