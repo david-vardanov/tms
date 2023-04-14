@@ -53,27 +53,22 @@ $('#generate-invite-form').submit((event) => {
   });
 });
 
-$(document).ready(function() {
-  $(".view-document").on("click", function() {
+
+
+$(document).ready(function () {
+  $(".retrieve-document").on("click", function () {
     const carrierId = $(this).data("carrier-id");
     const docId = $(this).data("doc-id");
     const url = `/carriers/${carrierId}/documents/${docId}/view`;
 
-    $.get(url, function(response) {
-      window.open(response.preSignedUrl, "_blank");
-    }).fail(function() {
+    const button = $(this);
+
+    $.get(url, function (response) {
+      const openButton = `<a href="${response.preSignedUrl}" target="_blank" class="btn btn-primary">Open</a>`;
+      button.replaceWith(openButton);
+    }).fail(function () {
       alert("Error retrieving the document");
     });
-  });
-});
-
-
-$('.view-button').click(function() {
-  var id = $(this).data('id'); // Get the ID of the carrier from the data attribute
-  $.get('/carriers/' + id, function(data) { // Make a GET request to the server to get the carrier data
-
-    $('#carrier-popup .modal-body').html(data); // Update the popup's body with the carrier/show.ejs template
-    $('#carrier-popup').modal('show'); // Show the popup
   });
 });
 
@@ -87,6 +82,15 @@ $('.view-invite').click(function() {
   });
 });
 
+
+$('.view-button').click(function() {
+  var id = $(this).data('id'); // Get the ID of the carrier from the data attribute
+  $.get('/carriers/' + id, function(data) { // Make a GET request to the server to get the carrier data
+
+    $('#carrier-popup .modal-body').html(data); // Update the popup's body with the carrier/show.ejs template
+    $('#carrier-popup').modal('show'); // Show the popup
+  });
+});
 
 $(document).ready(function() {
   function handleModerateCheckbox() {

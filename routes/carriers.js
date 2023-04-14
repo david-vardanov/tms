@@ -148,33 +148,21 @@ router.get('/setup-complete', async (req, res) => {
   //carrier show
 
 // routes/carriers.js
-router.get('/:id', isAuthenticated, async (req, res) => {
+router.get("/:id", isAuthenticated, async (req, res) => {
   try {
-    const carrier = await Carrier.findById(req.params.id).populate('documents');
-    const invite = await Invite.find({ mcNumber: carrier.mcNumber }).populate('logs');
-    
-    // Generate pre-signed URLs for each document
-    let documentsWithSignedUrls = await Promise.all(
-      carrier.documents.map(async (document) => {
-        let docUrl = document.url;
-        console.log(docUrl);
-        let getObjectCommand = new GetObjectCommand({ Bucket: process.env.S3_BUCKET_NAME, Key: docUrl }),
-          signedUrl = await getSignedUrl(s3Client, getObjectCommand, { expiresIn: 300 });
-        return { ...document.toObject(), preSignedUrl: signedUrl };
-      })
-    );
-    
-    // Replace the direct access to 'url' with the pre-signed URL.
+    const carrier = await Carrier.findById(req.params.id).populate("documents");
+    const invite = await Invite.find({ mcNumber: carrier.mcNumber }).populate("logs");
+
     res.render("carrier/show", {
       invite: invite,
       carrier: carrier,
       logs: invite.logs,
-      documents: documentsWithSignedUrls.map((doc) => ({ ...doc, url: doc.preSignedUrl })),
+      documents: carrier.documents,
       title: "Carrier Details",
     });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Internal server error');
+    res.status(500).send("Internal server error");
   }
 });
 
