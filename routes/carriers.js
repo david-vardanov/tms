@@ -277,8 +277,6 @@ router.post('/:id/moderate', async (req, res) => {
 
 
 
-const { S3Client, ListObjectsV2Command, DeleteObjectCommand } = require("@aws-sdk/client-s3");
-
 router.delete('/:id', async (req, res) => {
   try {
     const carrierId = req.params.id;
