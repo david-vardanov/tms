@@ -9,7 +9,7 @@ const Invite = require('../models/invite');
 
 const s3 = new S3({
   endpoint: process.env.ENDPOINT,
-  region: 'us-west-1',
+  region: process.env.S3_REGION,
   credentials: {
     accessKeyId: process.env.S3_ACCESS_KEY,
     secretAccessKey: process.env.S3_SECRET_KEY,
