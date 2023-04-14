@@ -69,23 +69,19 @@ $('.view-invite').click(function() {
 
 
 $(document).ready(function () {
-  $(".view-document").on("click", function () {
+  $(".download-document").on("click", function () {
     const carrierId = $(this).data("carrier-id");
     const docId = $(this).data("doc-id");
     const url = `/carriers/${carrierId}/documents/${docId}/view`;
 
     $.get(url, function (response) {
-      const xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          const blob = new Blob([xhr.response], { type: "application/pdf" });
-          const objectUrl = URL.createObjectURL(blob);
-          window.open(objectUrl, "_blank");
-        }
-      };
-      xhr.open("GET", response.preSignedUrl, true);
-      xhr.responseType = "arraybuffer";
-      xhr.send();
+      const presignedUrl = response.preSignedUrl;
+      const downloadLink = document.createElement('a');
+      downloadLink.href = presignedUrl;
+      downloadLink.download = "document"; // You can set this to the desired filename
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     }).fail(function () {
       alert("Error retrieving the document");
     });
