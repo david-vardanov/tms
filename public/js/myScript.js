@@ -90,11 +90,14 @@ $(document).ready(function () {
 });
 
 $(".view-button").click(function () {
+  $("#carrierModalLoader").show();
   var id = $(this).data("id");
   $.get("/carriers/" + id, function (data) {
     $("#carrier-popup .modal-body").html(data);
     $("#carrier-popup").modal("show");
   });
+  $("#carrierModalLoader").hide();
+
 });
 
 $(document).ready(function() {
