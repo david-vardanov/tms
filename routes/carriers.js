@@ -13,14 +13,14 @@ const { sanitizeInput } = require('../middlewares/sanitize');
 const { validateCarrierSetup } = require('../middlewares/validation');
 const { generateBrokerCarrierAgreement } = require('../helper/pdfGenerator');
 const isAuthenticated = require('../middlewares/authMiddleware');
-const { uploadFileToSpaces } = require("../helper/awsSdk");
+
 const crypto = require('crypto');
 const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
 
 const ConnectMongoDBSession = require('connect-mongodb-session');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { upload, s3Client } = require('../helper/awsSdk');
-const { GetObjectCommand } = require('@aws-sdk/client-s3');
+const { GetObjectCommand, ListObjectsV2Command, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { URL } = require('url');
 
 
@@ -277,32 +277,49 @@ router.post('/:id/moderate', async (req, res) => {
 
 
 
-  router.delete('/:id', async (req, res) => {
-    try {
-      const carrierId = req.params.id;
-      
-      // Find the carrier by its ID
-      const carrier = await Carrier.findById(carrierId);
-  
-      if (carrier) {
-        // Remove the associated directory
-        const mcNumber = carrier.mcNumber;
-        const dirPath = `./docs/carrierMc/${mcNumber}`;
-        if (fs.existsSync(dirPath)) {
-          fs.rmSync(dirPath, { recursive: true, force: true });
-        }
-  
-        // Remove the carrier from the database
-        await Carrier.findByIdAndRemove(carrierId);
-        res.status(200).json({ success: true, message: 'Carrier deleted successfully.' });
-      } else {
-        res.status(404).json({ success: false, message: 'Carrier not found.' });
+const { S3Client, ListObjectsV2Command, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const carrierId = req.params.id;
+    
+    // Find the carrier by its ID
+    const carrier = await Carrier.findById(carrierId);
+
+    if (carrier) {
+      const mcNumber = carrier.mcNumber;
+      const dirPath = `carrierMc/${mcNumber}`;
+
+      // List all objects in the folder
+      const listObjectsParams = {
+        Bucket: process.env.S3_BUCKET_NAME,
+        Prefix: dirPath
+      };
+
+      const listObjectsResponse = await s3Client.send(new ListObjectsV2Command(listObjectsParams));
+
+      // Delete each object in the folder
+      for (const obj of listObjectsResponse.Contents) {
+        const deleteObjectParams = {
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: obj.Key
+        };
+
+        await s3Client.send(new DeleteObjectCommand(deleteObjectParams));
       }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: 'Internal server error.' });
+
+      // Remove the carrier from the database
+      await Carrier.findByIdAndRemove(carrierId);
+      res.status(200).json({ success: true, message: 'Carrier deleted successfully.' });
+    } else {
+      res.status(404).json({ success: false, message: 'Carrier not found.' });
     }
-  });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+});
+
   
 
 router.post('/:id/decline', async (req, res) => {
