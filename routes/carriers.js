@@ -171,31 +171,19 @@ router.get("/:id/documents/:docId/view", isAuthenticated, async (req, res) => {
   try {
     let carrier = await Carrier.findById(req.params.id);
     let document = carrier.documents.id(req.params.docId);
-    console.log(document);
+
     if (!document) return res.status(404).send("Document not found");
 
-    let getObjectParams = {
-      Bucket: process.env.S3_BUCKET_NAME,
-      Key: document.url,
-    };
+    let objectKey = document.url;
+    let getObjectParams = { Bucket: process.env.S3_BUCKET_NAME, Key: objectKey };
+    let presignedUrl = await getSignedUrl(s3Client, getObjectParams, { expiresIn: 300 });
 
-    // Get the object from the S3 client
-    s3Client.getObject(getObjectParams, (error, data) => {
-      if (error) {
-        console.error(error);
-        res.status(500).send("Internal server error");
-      } else {
-        // Set the proper content type and send the data as a response
-        res.set("Content-Type", data.ContentType);
-        res.send(data.Body);
-      }
-    });
-  } catch (error) {
-    console.error(error);
+    res.json({ preSignedUrl: presignedUrl });
+  } catch (err) {
+    console.error(err);
     res.status(500).send("Internal server error");
   }
 });
-
 
 
 

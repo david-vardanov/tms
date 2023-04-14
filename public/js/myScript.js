@@ -55,22 +55,7 @@ $('#generate-invite-form').submit((event) => {
 
 
 
-$(document).ready(function () {
-  $(".retrieve-document").on("click", function () {
-    const carrierId = $(this).data("carrier-id");
-    const docId = $(this).data("doc-id");
-    const url = `/carriers/${carrierId}/documents/${docId}/view`;
 
-    const button = $(this);
-
-    $.get(url, function (response) {
-      const openButton = `<a href="${response.preSignedUrl}" target="_blank" class="btn btn-primary">Open</a>`;
-      button.replaceWith(openButton);
-    }).fail(function () {
-      alert("Error retrieving the document");
-    });
-  });
-});
 
 
 $('.view-invite').click(function() {
@@ -89,9 +74,23 @@ $(document).ready(function () {
     const docId = $(this).data("doc-id");
     const url = `/carriers/${carrierId}/documents/${docId}/view`;
 
-    // Create a new window with the document URL
-    window.open(url, "_blank");
+    $.get(url, function (response) {
+      const xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          const blob = new Blob([xhr.response], { type: "application/pdf" });
+          const objectUrl = URL.createObjectURL(blob);
+          window.open(objectUrl, "_blank");
+        }
+      };
+      xhr.open("GET", response.preSignedUrl, true);
+      xhr.responseType = "arraybuffer";
+      xhr.send();
+    }).fail(function () {
+      alert("Error retrieving the document");
+    });
   });
+
 });
 
 $(".view-button").click(function () {
