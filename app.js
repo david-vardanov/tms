@@ -10,9 +10,9 @@ const crypto = require('crypto');
 const https = require('https');
 const fs = require('fs');
 
-// const privateKey = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/privkey.pem', 'utf8');
-// const certificate = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/cert.pem', 'utf8');
-// const ca = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/chain.pem', 'utf8');
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/chain.pem', 'utf8');
 
 
 
@@ -92,13 +92,13 @@ app.use(methodOverride('_method'));
 app.use(routes);
 app.use(handleError);
 
-// const credentials = { key: privateKey, cert: certificate, ca: ca };
-// const httpsServer = https.createServer(credentials, app);
+const credentials = { key: privateKey, cert: certificate, ca: ca };
+const httpsServer = https.createServer(credentials, app);
 
-// httpsServer.listen(process.env.SPORT, () => {
-//   console.log('HTTPS Server running on port' + process.env.PORT);
-// });
-
-app.listen(process.env.PORT, () => {
-  console.log('Server is running on port ' + process.env.PORT);
+httpsServer.listen(process.env.SPORT, () => {
+  console.log('HTTPS Server running on port' + process.env.PORT);
 });
+
+// app.listen(process.env.PORT, () => {
+//   console.log('Server is running on port ' + process.env.PORT);
+// });
