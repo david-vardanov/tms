@@ -1,5 +1,4 @@
-// Define path to testimonials file
-const testimonialsFile = '../testimonials.txt';
+
 
 
 
@@ -53,6 +52,21 @@ $('#generate-invite-form').submit((event) => {
     }
   });
 });
+
+$(document).ready(function() {
+  $(".view-document").on("click", function() {
+    const carrierId = $(this).data("carrier-id");
+    const docId = $(this).data("doc-id");
+    const url = `/carriers/${carrierId}/documents/${docId}/view`;
+
+    $.get(url, function(response) {
+      window.open(response.preSignedUrl, "_blank");
+    }).fail(function() {
+      alert("Error retrieving the document");
+    });
+  });
+});
+
 
 $('.view-button').click(function() {
   var id = $(this).data('id'); // Get the ID of the carrier from the data attribute
@@ -239,7 +253,10 @@ $(document).ready(function() {
 });
 
 
+// Define path to testimonials file
 
+$(document).ready(function() {
+const testimonialsFile = '../testimonials.txt';
 if($('.testimonials').length) {
   // Get the testimonials from the file
   fetch(testimonialsFile)
@@ -292,7 +309,7 @@ if($('.testimonials').length) {
   // Enable the carousel
   $('#testimonials').carousel();
   }
-
+});
 
 // $(document).ready(() => {
 //   $('#carrier-setup-form').submit((event) => {

@@ -18,11 +18,14 @@ const crypto = require('crypto');
 const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
 
 const ConnectMongoDBSession = require('connect-mongodb-session');
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { upload, s3Client } = require('../helper/awsSdk');
 const { GetObjectCommand } = require('@aws-sdk/client-s3');
 
+
+
 //POST REQUEST FOR CARRIER SETUP
-const { upload, s3Client } = require('../helper/awsSdk');
+
 // Other routes...
 
 router.get('/carrier-setup', async (req, res) => {
@@ -156,7 +159,7 @@ router.get('/:id', isAuthenticated, async (req, res) => {
         const fileKey = document.url; // Use the relative path as the file key
         console.log(document.url);
         const command = new GetObjectCommand({
-          Bucket: 'agdfiles',
+          Bucket: process.env.S3_BUCKET_NAME,
           Key: fileKey,
         });
 
@@ -177,32 +180,25 @@ router.get('/:id', isAuthenticated, async (req, res) => {
 
 
 
-//   // routes/carriers.js
-// router.get('/:id/document/:documentId', isAuthenticated, async (req, res) => {
-//   const documentId = req.params.documentId;
+router.get("/:id/documents/:docId/view", isAuthenticated, async (req, res) => {
+  try {
+    const carrier = await Carrier.findById(req.params.id);
+    const document = carrier.documents.id(req.params.docId);
 
-//   try {
-//     const document = await Document.findById(documentId);
+    if (!document) {
+      return res.status(404).send("Document not found");
+    }
 
-//     if (!document) {
-//       return res.status(404).json({ message: 'Document not found' });
-//     }
+    const s3Key = document.url;
+    const s3Command = new GetObjectCommand({ Bucket: process.env.S3_BUCKET_NAME, Key: s3Key });
+    const preSignedUrl = await getSignedUrl(s3Client, s3Command, { expiresIn: 300 });
 
-//     // Generate pre-signed URL
-//     const params = {
-//       Bucket: 'your-bucket-name',
-//       Key: document.key, // Assuming you store the file key in your Document model
-//       Expires: 60 * 5 // URL will expire in 5 minutes
-//     };
-
-//     const url = s3.getSignedUrl('getObject', params);
-
-//     return res.json({ url });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: 'Internal server error' });
-//   }
-// });
+    res.json({ preSignedUrl });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal server error");
+  }
+});
 
 
 

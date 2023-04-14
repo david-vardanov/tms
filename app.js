@@ -43,11 +43,12 @@ app.use(
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
         "script-src": [
           "'self'",
+          "'unsafe-inline'", // Add this line temporarily
           "https://code.jquery.com",
           "https://cdn.jsdelivr.net",
           "https://cdnjs.cloudflare.com",
           "https://maxcdn.bootstrapcdn.com",
-          (req, res) => `'nonce-${res.locals.nonce}'`, // Add this line
+          //(req, res) => `'nonce-${res.locals.nonce}'`, // Add this line
         ],
         "frame-src": ["'self'", "https://www.google.com"]
       },
