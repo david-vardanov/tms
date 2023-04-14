@@ -19,6 +19,17 @@ const s3 = new S3({
 
 });
 
+
+const s3Client = new S3({
+  forcePathStyle: false, // Configures to use subdomain/virtual calling format.
+  endpoint: "https://sfo3.digitaloceanspaces.com",
+  region: "us-east-1",
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY,
+    secretAccessKey: process.env.S3_SECRET_KEY
+  }
+});
+
 const upload = multer({
   storage: multerS3({
     s3,
@@ -35,4 +46,4 @@ const upload = multer({
   }),
 });
 
-module.exports = { s3Client: s3, upload };
+module.exports = { s3Client, upload };
