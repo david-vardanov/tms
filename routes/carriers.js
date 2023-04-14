@@ -74,7 +74,7 @@ documentTypes.forEach((type) => {
     let file = files[type][0],
       newDocument = {
         type,
-        url: new URL(file.location).pathname.substring(1),
+        url: file.location,
         name: name + "-" + invite.mcNumber + "-" + type,
       };
     newCarrier.documents.push(newDocument);
@@ -171,7 +171,7 @@ router.get("/:id/documents/:docId/view", isAuthenticated, async (req, res) => {
   try {
     let carrier = await Carrier.findById(req.params.id);
     let document = carrier.documents.id(req.params.docId);
-
+    console.log(document);
     if (!document) return res.status(404).send("Document not found");
 
     let getObjectParams = {
