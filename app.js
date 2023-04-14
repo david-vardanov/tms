@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 const path = require('path');
 const engine = require('ejs-mate');
 const session = require('express-session');
@@ -10,14 +11,12 @@ const crypto = require('crypto');
 const https = require('https');
 const fs = require('fs');
 
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/cert.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/chain.pem', 'utf8');
+// 
 
 
 
 
-require('dotenv').config();
+
 const methodOverride = require('method-override');
 const expressSanitizer = require('express-sanitizer');
 
@@ -91,6 +90,10 @@ app.use(methodOverride('_method'));
 
 app.use(routes);
 app.use(handleError);
+
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/agdlogistics.com/chain.pem', 'utf8');
 
 const credentials = { key: privateKey, cert: certificate, ca: ca };
 const httpsServer = https.createServer(credentials, app);
