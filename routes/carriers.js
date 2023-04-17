@@ -258,7 +258,7 @@ router.post('/:id/moderate', async (req, res) => {
       const pdfBuffer = await generateBrokerCarrierAgreement(carrier);
 
       // Upload the PDF document to DO Space
-      const pdfFileName = `carrierMc/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
+      const pdfFileName = `carrierMc/${carrier.mcNumber}/broker-carrier-agreement-${carrier.mcNumber}.pdf`;
       await s3Client.putObject({
         Bucket: process.env.S3_BUCKET_NAME,
         Key: pdfFileName,
@@ -266,9 +266,13 @@ router.post('/:id/moderate', async (req, res) => {
         ContentType: 'application/pdf',
       });
 
-      // Save the URL of the Carrier Broker Agreement document
-      const carrierAgreementUrl = `/${pdfFileName}`;
-      carrier.carrierAgreementUrl = carrierAgreementUrl;
+      // Save the Carrier Broker Agreement document as a regular document
+      const newDocument = {
+        type: 'agreement',
+        name: `agreement-${carrier.mcNumber}`,
+        url: pdfFileName,
+      };
+      carrier.documents.push(newDocument);
 
       await carrier.save();
 

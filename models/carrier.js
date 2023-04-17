@@ -12,7 +12,7 @@ const paymentSchema = new Schema({
 
 const documentSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  type: { type: String, enum: ['coi', 'noa', 'voidCheck', 'MCAuthority', 'w9', 'other'  ] },
+  type: { type: String, enum: ['coi', 'noa', 'voidCheck', 'MCAuthority', 'w9', 'other', 'agreement' ] },
   url: { type: String, required: true }
 });
 
