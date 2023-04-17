@@ -20,11 +20,10 @@ const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
 const ConnectMongoDBSession = require('connect-mongodb-session');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { upload, s3Client } = require('../helper/awsSdk');
-const { GetObjectCommand, ListObjectsV2Command, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { GetObjectCommand, PutObjectCommand, ListObjectsV2Command, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { URL } = require('url');
 const fs = require('fs');
-const util = require('util');
-const unlinkAsync = util.promisify(fs.unlink);
+
 
 //POST REQUEST FOR CARRIER SETUP
 
@@ -247,8 +246,6 @@ router.get('/:id/edit',isAuthenticated, async (req, res) => {
 
 
 
-
-
 router.post('/:id/moderate', async (req, res) => {
   try {
     const carrierId = req.params.id;
@@ -258,31 +255,24 @@ router.post('/:id/moderate', async (req, res) => {
       carrier.status = 'Active';
 
       // Generate the PDF document
-      const fileName = `./temp/broker-carrier-agreement-${carrier.mcNumber}.pdf`;
-      await generateBrokerCarrierAgreement(carrier, fileName);
+      const pdfStream = generateBrokerCarrierAgreement(carrier);
+      const key = `mcNumber/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
 
-      // Upload the PDF document to DO Spaces
-      const fileStream = fs.createReadStream(fileName);
-      const folderPath = `carrierMc/${carrier.mcNumber}`;
-      const key = `${folderPath}/broker-carrier-agreement.pdf`;
-
-      const uploadParams = {
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: key,
-        Body: fileStream,
-        ContentType: 'application/pdf',
-      };
-
-      await s3Client.putObject(uploadParams).promise();
+      // Upload the PDF to DO Spaces
+      const result = await s3Client.send(
+        new PutObjectCommand({
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: key,
+          Body: pdfStream,
+          ContentType: 'application/pdf',
+        })
+      );
 
       // Save the URL of the Carrier Broker Agreement document
-      const carrierAgreementUrl = `carrierMc/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
+      const carrierAgreementUrl = `/mcNumber/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
       carrier.carrierAgreementUrl = carrierAgreementUrl;
 
       await carrier.save();
-
-      // Remove the temporary local file
-      await unlinkAsync(fileName);
 
       res.redirect('/');
 
