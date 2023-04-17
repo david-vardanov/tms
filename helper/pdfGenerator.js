@@ -1,9 +1,10 @@
 const PDFDocument = require('pdfkit');
-const stream = require('stream');
+const MemoryStream = require('memorystream');
 
 function generateBrokerCarrierAgreement(carrier) {
-  const doc = new PDFDocument();
-  const pdfStream = new stream.PassThrough();
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument();
+    const memStream = new MemoryStream();
 
   // Write PDF content
   doc.fontSize(14);
@@ -20,12 +21,18 @@ function generateBrokerCarrierAgreement(carrier) {
   doc.moveDown();
   doc.text(`[Place the legal text of the agreement here. You can add dynamic data using the carrier object.]`);
 
-  // Return PDF stream
-  doc.pipe(pdfStream);
-  doc.end();
-  return pdfStream;
+   // Save PDF to buffer
+   doc.pipe(memStream);
+   doc.on('end', () => {
+     resolve(memStream.read());
+   });
+   doc.on('error', (err) => {
+     reject(err);
+   });
+   doc.end();
+ });
 }
 
 module.exports = {
-  generateBrokerCarrierAgreement,
+ generateBrokerCarrierAgreement,
 };

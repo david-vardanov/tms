@@ -254,22 +254,20 @@ router.post('/:id/moderate', async (req, res) => {
     if (carrier) {
       carrier.status = 'Active';
 
-      // Generate the PDF document
-      const pdfStream = generateBrokerCarrierAgreement(carrier);
-      const key = `mcNumber/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
+      // Generate and save the PDF document
+      const pdfBuffer = await generateBrokerCarrierAgreement(carrier);
 
-      // Upload the PDF to DO Spaces
-      const result = await s3Client.send(
-        new PutObjectCommand({
-          Bucket: process.env.S3_BUCKET_NAME,
-          Key: key,
-          Body: pdfStream,
-          ContentType: 'application/pdf',
-        })
-      );
+      // Upload the PDF document to DO Space
+      const pdfFileName = `carrierMc/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
+      await s3Client.putObject({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: pdfFileName,
+        Body: pdfBuffer,
+        ContentType: 'application/pdf',
+      });
 
       // Save the URL of the Carrier Broker Agreement document
-      const carrierAgreementUrl = `/mcNumber/${carrier.mcNumber}/broker-carrier-agreement.pdf`;
+      const carrierAgreementUrl = `/${pdfFileName}`;
       carrier.carrierAgreementUrl = carrierAgreementUrl;
 
       await carrier.save();
