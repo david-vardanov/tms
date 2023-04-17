@@ -8,7 +8,7 @@ const Business = require('../models/business');
 const User = require('../models/user');
 const Document = require('../models/document');
 const paginate = require('express-paginate');
-const PDFDocument = require('pdfkit');
+
 const { sanitizeInput } = require('../middlewares/sanitize');
 const { validateCarrierSetup } = require('../middlewares/validation');
 const { generateBrokerCarrierAgreement } = require('../helper/pdfGenerator');
