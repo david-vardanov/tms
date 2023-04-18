@@ -49,7 +49,7 @@ const loginSchema = Joi.object({
       // Get the ObjectId from the token or another source
       const { inviteId } = jwt.verify(req.body.token, process.env.JWT_SECRET);
       // Redirect back to the correct URL with the ObjectId
-      return res.redirect(`/carriers/${inviteId}/submit-carrier-setup`);
+      return res.redirect(`/carriers/carrier-setup?token=${inviteId}/submit-carrier-setup`);
     }
     next();
   };
