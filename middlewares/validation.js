@@ -45,12 +45,15 @@ const loginSchema = Joi.object({
       const errors = error.details.map((err) => err.message);
       console.log("Validation errors:", errors);
       req.flash('validationErrors', errors);
-           
-      // Redirect back to the correct URL with the ObjectId
-      return res.redirect(`/carriers/carrier-setup?token=${req.body.token}`);
+      
+      // Get the ObjectId from the token or another source
+      const { inviteId } = jwt.verify(req.body.token, process.env.JWT_SECRET);
+      // Redirect back to the correct URL with the token
+      return res.redirect(`/carriers/carrier-setup?token=${inviteId}`);
     }
     next();
   };
+  
   
 
   const validateLogin = (req, res, next) => {
