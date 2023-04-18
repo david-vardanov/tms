@@ -30,6 +30,8 @@ const fs = require('fs');
 // Other routes...
 
 router.get('/carrier-setup', async (req, res) => {
+  console.log('Session:', req.session);
+
   const token = req.query.token;
 
   try {
