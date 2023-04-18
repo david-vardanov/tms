@@ -38,15 +38,16 @@ const loginSchema = Joi.object({
 
 
   const validateCarrierSetup = (req, res, next) => {
-
+    console.log("Original URL:", req.originalUrl);
     const { error } = carrierSetupSchema.validate(req.body, { abortEarly: false });
     if (error) {
       const errors = error.details.map((err) => err.message);
+      console.log("Validation errors:", errors);
       req.flash('validationErrors', errors);
-      return res.redirect(req.originalUrl); // Redirect back to the same URL with the token
+      return res.redirect(req.originalUrl);
     }
     next();
-};
+  };
 
   const validateLogin = (req, res, next) => {
     const { error } = loginSchema.validate(req.body, { abortEarly: false });

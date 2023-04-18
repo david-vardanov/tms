@@ -55,10 +55,13 @@ router.get('/carrier-setup', async (req, res) => {
 
 // POST
 router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'liabilityInsuranceCertificate' }, { name: 'noa' }, { name: 'voidCheck' }, {name: 'insurance'}, {name: 'MCAuthority'}, {name: 'w9'}, {name: 'other'}]), validateCarrierSetup, async (req, res) => {
+  console.log("Request body:", req.body);
+  console.log("Request files:", req.files);
   try {
     const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, documentExpirationDate } = sanitizeInput(req.body, req);
     const files = req.files;
     const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded token:", { inviteId });
     const invite = await Invite.findById(inviteId);
     console.log(req.user);
     const newCarrier = new Carrier({
@@ -86,7 +89,6 @@ documentTypes.forEach((type) => {
     await newCarrier.save();
     invite.isExpired = true;
     await invite.save();
-    req.flash('success', 'Carrier setup submitted successfully. Please wait for approval.');
     res.render('setupComplete', { title: "Setup Complete", user: invite.createdBy });
   } catch (err) {
     console.error(err);
