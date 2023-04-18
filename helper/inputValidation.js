@@ -6,17 +6,17 @@ const Joi = require('joi');
 const validationSchemas = {
   businessSchema: Joi.object({
     name: Joi.string().required(),
-    email: Joi.string().email().optional(),
-    phone: Joi.string().optional(),
-    address: Joi.string().optional(),
-    address2: Joi.string().optional(),
-    zip: Joi.string().optional(),
-    state: Joi.string().optional(),
-    city: Joi.string().optional(),
-    phone: Joi.string().optional(),
-    einNumber: Joi.string().optional(),
-    token: Joi.string(), // Include token property in the schema
-    dotNumber: Joi.string().optional(),
+    email: Joi.string().email().required(),
+    phone: Joi.string().required(),
+    address: Joi.string().required(),
+    address2: Joi.string().optional().allow(""),
+    zip: Joi.string().required(),
+    state: Joi.string().required(),
+    city: Joi.string().required(),
+    phone: Joi.string().required(),
+    einNumber: Joi.string().required(),
+    token: Joi.string(), // 
+    dotNumber: Joi.string().required(),
     status: Joi.string()
       .valid('Active', 'Inactive', 'Deactivated', 'Pending', 'inModeration', 'Declined')
       .optional(),
@@ -25,7 +25,7 @@ const validationSchemas = {
   }),
   documentSchema: Joi.object({
     name: Joi.string().required(),
-    type: Joi.string().valid('coi', 'noa', 'voidCheck', 'liabilityInsuranceCertificate').required(),
+    type: Joi.string().valid('coi', 'noa', 'voidCheck', 'MCAuthority', 'w9', 'other', 'agreement').required(),
     url: Joi.string().required(),
   }),
   paymentSchema: Joi.object({
