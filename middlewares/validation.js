@@ -37,24 +37,17 @@ const loginSchema = Joi.object({
   });
 
 
-const validateCarrierSetup = (req, res, next) => {
-    console.log(req.body)
+  const validateCarrierSetup = (req, res, next) => {
     const { error } = carrierSetupSchema.validate(req.body, { abortEarly: false });
     if (error) {
       const errors = error.details.map((err) => err.message);
-      return res.status(400).json({ success: false, errors });
+      req.flash('validationErrors', errors);
+      req.session.redirectUrl = req.originalUrl; // Store the unique URL in the session
+      return res.redirect(req.session.redirectUrl);
     }
     next();
-  };
+};
 
-  const validateLogin = (req, res, next) => {
-    const { error } = loginSchema.validate(req.body, { abortEarly: false });
-    if (error) {
-      const errors = error.details.map((err) => err.message);
-      return res.status(400).json({ success: false, errors });
-    }
-    next();
-  };
   
 
 
