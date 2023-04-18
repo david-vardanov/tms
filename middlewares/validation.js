@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const jwt = require('jsonwebtoken');
 
 const carrierSetupSchema = Joi.object({
   email: Joi.string().email().required(),
