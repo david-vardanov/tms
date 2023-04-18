@@ -35,6 +35,11 @@ const validationSchemas = {
   }),
   CarrierSchema: Joi.object({
     ...BusinessSchema.obj,
+    ownerName: Joi.string().required(),
+    signature: Joi.string().required(),
+    dispatcherName: Joi.string().required(),
+    dispatcherEmail: Joi.string().email().required(),
+    dispatcherPhone: Joi.string().required(),
     payment: paymentSchema,
     documents: Joi.array().items(documentSchema).required(),
   }),

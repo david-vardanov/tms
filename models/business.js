@@ -26,6 +26,7 @@ const businessSchema = new mongoose.Schema({
   address2: {
     type: String,
     trim: true,
+    required: false
   },
   zip: {
     type: String,

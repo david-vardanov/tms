@@ -10,8 +10,12 @@
             <div class="col-md-12">
               <ul style="list-style-type: none;">
                 <h6 clas="text-muted">Business details</h6>
-                <li>Phone: <%= carrier.phone %></li>
-                <li>Email: <%= carrier.email %></li>
+                <li>Owner Name: <%= carrier.ownerName %></li>
+                <li>Dispatcher Name: <%= carrier.dispatcherName %></li>
+                <li>Dispatcher Phone: <%= carrier.dispatcherPhone %></li>
+                <li>Dispatcher Email: <%= carrier.dispatcherEmail %></li>
+                <li>Company Phone: <%= carrier.phone %></li>
+                <li>Company Email: <%= carrier.email %></li>
                 <li>DOT: <%= carrier.dotNumber %></li>
                 <li>EIN: <%= carrier.einNumber %></li>
                 <li>Address: <%= carrier.address %></li>
@@ -22,7 +26,6 @@
                 <li>Invited by: <%= invite.createdBy %></li>
               </ul>
             </div>
-            
           </div>
         
           <!-- RIGHT -->
@@ -37,18 +40,18 @@
                       </tr>
                   </thead>
                   <tbody>
+                    <tr>
+                      <td>Agreement</td>
+                    </tr>
+                    <tr>
+                      <button class="download-document" data-carrier-id="<%= carrier._id %>" data-doc-id="<%= document._id %>">Download</button>
+                      
+                    </tr>
                     <% documents.forEach(function(document) { %>
                       <tr>
                         <td><%= document.type %></td>
                         <td>
                           <button class="download-document" data-carrier-id="<%= carrier._id %>" data-doc-id="<%= document._id %>">Download</button>
-                          <% if (document.preSignedUrl) { %>
-                            
-
-                            
-                          <% } else { %>
-                            N/A
-                          <% } %>
                         </td>
                       </tr>
                     <% }); %>

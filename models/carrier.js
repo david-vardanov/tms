@@ -20,7 +20,12 @@ const carrierSchema = new Schema({
   ...BusinessSchema.obj, 
   payment: paymentSchema,
   documents: [documentSchema],
-  carrierAgreementUrl: String // new field for storing the URL of the Carrier Broker Agreement document
+  ownerName: String,
+  signature: String,
+  dispatcherName: String,
+  dispatcherEmail: String,
+  dispatcherPhone: String,
+  
 });
 
 const Carrier = mongoose.model("Carrier", carrierSchema);
