@@ -1,7 +1,7 @@
-<% if (locals.flash.validationErrors && locals.flash.validationErrors.length) { %>
+<% if (locals.validationErrors && validationErrors.length) { %>
     <div class="alert alert-danger">
       <ul>
-        <% locals.flash.validationErrors.forEach(function(error) { %>
+        <% validationErrors.forEach(function(error) { %>
           <li><%= error %></li>
         <% }); %>
       </ul>
