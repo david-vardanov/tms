@@ -44,7 +44,7 @@ router.get('/carrier-setup', async (req, res) => {
       // Fetch the carrier using the mcNumber
       
       // Render the carrierSetup view with the carrier data
-      res.render('carrierSetup', { mcNumber,invite, token, title: "Carrier Setup" });
+      res.render('carrierSetup', { mcNumber,invite, token, title: "Carrier Setup", flash: req.flash() });
     } else {
       res.status(400).send('The invite link is expired or invalid.');
     }
