@@ -261,7 +261,7 @@ $(document).ready(function() {
         $('#noaUpload').fadeIn(50);
       });
     }
-    else if (this.value == 'quickpay') {
+    else {
       $('#noaUpload').fadeOut(50, function() {
         $('#voidCheckUpload').fadeIn(50);
       });
