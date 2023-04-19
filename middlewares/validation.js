@@ -14,11 +14,11 @@ const carrierSetupSchema = Joi.object({
   dotNumber: Joi.string().required(),
   paymentMethod: Joi.string().valid("factoring","standart", "quickpay1", "quickpay2", "quickpay3").required(),
   token: Joi.string().required(),
-  coi: Joi.any().required(),
-  MCAuthority: Joi.any().required(),
-  w9: Joi.any().required(),
-  noa: Joi.any().optional(),
-  voidCheck: Joi.any().optional(),
+  coi: Joi.any().unknown().required(),
+  MCAuthority: Joi.any().unknown().required(),
+  w9: Joi.any().unknown().required(),
+  noa: Joi.any().unknown().optional(),
+  voidCheck: Joi.any().unknown().optional(),
   ownerName: Joi.string().required(), 
   signature: Joi.string().required(), 
   dispatcherName: Joi.string().required(), 
@@ -40,9 +40,8 @@ const loginSchema = Joi.object({
 
 
   const validateCarrierSetup = (req, res, next) => {
-    console.log(req.body);
-    console.log(req.files);
-    const { error } = carrierSetupSchema.validate(req.body, { abortEarly: false });
+    const dataToValidate = { ...req.body, ...req.files };
+    const { error } = carrierSetupSchema.validate(dataToValidate, { abortEarly: false });
     if (error) {
       const errors = error.details.map((err) => err.message);
       req.flash('validationErrors', errors);
