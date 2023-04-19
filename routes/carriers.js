@@ -30,8 +30,6 @@ const fs = require('fs');
 // Other routes...
 
 router.get('/carrier-setup', async (req, res) => {
-  console.log('Session:', req.session);
-
   const token = req.query.token;
 
   try {
@@ -42,9 +40,9 @@ router.get('/carrier-setup', async (req, res) => {
     
     if (invite && moment().isBefore(invite.expiresAt)) {
       // Fetch the carrier using the mcNumber
-      
+      const formData = req.query.data ? JSON.parse(req.query.data) : {};
       // Render the carrierSetup view with the carrier data
-      res.render('carrierSetup', { mcNumber,invite, token, title: "Carrier Setup", flash: req.flash() });
+      res.render('carrierSetup', { mcNumber,invite, token, title: "Carrier Setup", flash: req.flash(), formData: formData });
     } else {
       res.status(400).send('The invite link is expired or invalid.');
     }
