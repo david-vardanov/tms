@@ -14,42 +14,38 @@ const carrierSetupSchema = Joi.object({
   dotNumber: Joi.string().required(),
   paymentMethod: Joi.string().valid("factoring","standart", "quickpay1", "quickpay2", "quickpay3").required(),
   token: Joi.string().required(),
-  coi: Joi.object({
-    fieldname: Joi.string().required(),
-    mimetype: Joi.string().required(),
-    size: Joi.number().required(),
-    location: Joi.string().required(),
-  }),
-  MCAuthority: Joi.object({
-    fieldname: Joi.string().required(),
-    mimetype: Joi.string().required(),
-    size: Joi.number().required(),
-    location: Joi.string().required(),
-  }),
-  w9: Joi.object({
-    fieldname: Joi.string().required(),
-    mimetype: Joi.string().required(),
-    size: Joi.number().required(),
-    location: Joi.string().required(),
-  }),
-  noa: Joi.object({
-    fieldname: Joi.string().optional(),
-    mimetype: Joi.string().optional(),
-    size: Joi.number().optional(),
-    location: Joi.string().optional(),
-  }).optional(),
-  voidCheck: Joi.object({
-    fieldname: Joi.string().optional(),
-    mimetype: Joi.string().optional(),
-    size: Joi.number().optional(),
-    location: Joi.string().optional(),
-  }).optional(),
-  other: Joi.object({
-    fieldname: Joi.string().optional(),
-    mimetype: Joi.string().optional(),
-    size: Joi.number().optional(),
-    location: Joi.string().optional(),
-  }).optional(),
+  coi: Joi.array().items(
+    Joi.object({
+      fieldname: Joi.string().required(),
+      mimetype: Joi.string().required(),
+      size: Joi.number().required(),
+      location: Joi.string().required(),
+    })
+  ).required(),
+  MCAuthority: Joi.array().items(
+    Joi.object({
+      fieldname: Joi.string().required(),
+      mimetype: Joi.string().required(),
+      size: Joi.number().required(),
+      location: Joi.string().required(),
+    })
+  ).required(),
+  w9: Joi.array().items(
+    Joi.object({
+      fieldname: Joi.string().required(),
+      mimetype: Joi.string().required(),
+      size: Joi.number().required(),
+      location: Joi.string().required(),
+    })
+  ).required(),
+  other: Joi.array().items(
+    Joi.object({
+      fieldname: Joi.string().optional(),
+      mimetype: Joi.string().optional(),
+      size: Joi.number().optional(),
+      location: Joi.string().optional(),
+    })
+  ).optional(),
   ownerName: Joi.string().required(), 
   signature: Joi.string().required(), 
   dispatcherName: Joi.string().required(), 
@@ -71,7 +67,15 @@ const loginSchema = Joi.object({
 
 
   const validateCarrierSetup = (req, res, next) => {
-    const dataToValidate = { ...req.body, ...req.files };
+    
+    const dataToValidate = {
+      ...req.body,
+      coi: req.files['coi'],
+      MCAuthority: req.files['MCAuthority'],
+      w9: req.files['w9'],
+      other: req.files['other'],
+    };
+    
     const { error } = carrierSetupSchema.validate(dataToValidate, { abortEarly: false });
     if (error) {
       const errors = error.details.map((err) => err.message);
