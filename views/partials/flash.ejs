@@ -1,4 +1,4 @@
-<% if (locals.flash && locals.flash.validationErrors) { %>
+<% if (typeof flash !== 'undefined' && flash.validationErrors) { %>
   <div class="alert alert-danger" role="alert">
     <ul>
       <% flash.validationErrors.forEach((error) => { %>
