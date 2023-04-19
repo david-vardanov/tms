@@ -99,36 +99,31 @@
                 <div class="form-group">
                   <label for="paymentMethod">Payment Method</label>           
                     <div class="form-check">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="factoring" value="factoring" 
-                      <% if (!formData.paymentMethod || formData.paymentMethod === 'factoring') { %>checked<% } %>>>
+                      <input class="form-check-input" type="radio" name="paymentMethod" id="factoring" value="factoring" checked>
                       <label class="form-check-label" for="factoring">
                         Factoring
                       </label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="standart" value="standart"
-                      <% if (formData.paymentMethod === 'standart') { %>checked<% } %>>>
+                      <input class="form-check-input" type="radio" name="paymentMethod" id="standart" value="standart">
                       <label class="form-check-label" for="quickpay1">
                         NET 30 STANDARD
                       </label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay1" value="quickpay1"
-                      <% if (formData.paymentMethod === 'quickpay1') { %>checked<% } %>>>
+                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay1" value="quickpay1">
                       <label class="form-check-label" for="quickpay1">
                         Quickpay 1 - 4 business days @ 5%
                       </label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay2" value="quickpay2"
-                      <% if (formData.paymentMethod === 'quickpay2') { %>checked<% } %>>>
+                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay2" value="quickpay2">
                       <label class="form-check-label" for="quickpay2">
                         Quickpay 5 - 8 business days @ 3%
                       </label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay3" value="quickpay3"
-                      <% if (formData.paymentMethod === 'quickpay3') { %>checked<% } %>>>
+                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay3" value="quickpay3">
                       <label class="form-check-label" for="quickpay3">
                         Quickpay 8 - 12 business days @ 1%
                       </label>
