@@ -15,7 +15,7 @@ const carrierSetupSchema = Joi.object({
   paymentMethod: Joi.string().valid("factoring","standart", "quickpay1", "quickpay2", "quickpay3").required(),
   token: Joi.string().required(),
   coi: Joi.array().items(
-    Joi.object({
+    Joi.object().unknown().keys({
       fieldname: Joi.string().required(),
       mimetype: Joi.string().required(),
       size: Joi.number().required(),
@@ -23,7 +23,7 @@ const carrierSetupSchema = Joi.object({
     })
   ).required(),
   MCAuthority: Joi.array().items(
-    Joi.object({
+    Joi.object().unknown().keys({
       fieldname: Joi.string().required(),
       mimetype: Joi.string().required(),
       size: Joi.number().required(),
@@ -31,7 +31,7 @@ const carrierSetupSchema = Joi.object({
     })
   ).required(),
   w9: Joi.array().items(
-    Joi.object({
+    Joi.object().unknown().keys({
       fieldname: Joi.string().required(),
       mimetype: Joi.string().required(),
       size: Joi.number().required(),
@@ -39,7 +39,7 @@ const carrierSetupSchema = Joi.object({
     })
   ).required(),
   other: Joi.array().items(
-    Joi.object({
+    Joi.object().unknown().keys({
       fieldname: Joi.string().optional(),
       mimetype: Joi.string().optional(),
       size: Joi.number().optional(),
@@ -67,7 +67,7 @@ const loginSchema = Joi.object({
 
 
   const validateCarrierSetup = (req, res, next) => {
-    
+
     const dataToValidate = {
       ...req.body,
       coi: req.files['coi'],
