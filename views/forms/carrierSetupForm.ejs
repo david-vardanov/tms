@@ -1,3 +1,12 @@
+<% if (locals.validationErrors && validationErrors.length) { %>
+  <div class="alert alert-danger">
+    <ul>
+      <% validationErrors.forEach(function(error) { %>
+        <li><%= error %></li>
+      <% }); %>
+    </ul>
+  </div>
+<% } %>
 
 <div class="container mt-5">
   <div class="row">
