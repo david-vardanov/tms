@@ -1,6 +1,5 @@
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
-const requiredDocuments = ['coi', 'w9', 'MCAuthority'];
 
 const carrierSetupSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -15,6 +14,11 @@ const carrierSetupSchema = Joi.object({
   dotNumber: Joi.string().required(),
   paymentMethod: Joi.string().valid('factoring', 'quickpay').required(),
   token: Joi.string().required(),
+  coi: Joi.any().required(),
+  MCAuthority: Joi.any().required(),
+  w9: Joi.any().required(),
+  noa: Joi.any().optional(),
+  voidCheck: Joi.any().optional(),
   ownerName: Joi.string().required(), 
   signature: Joi.string().required(), 
   dispatcherName: Joi.string().required(), 
@@ -22,18 +26,11 @@ const carrierSetupSchema = Joi.object({
   dispatcherPhone: Joi.string().required(), 
   documents: Joi.array().items(
     Joi.object({
-      type: Joi.string().valid('coi', 'noa', 'voidCheck', 'MCAuthority', 'w9', 'other' ),
+      type: Joi.string().valid('coi', 'noa', 'voidCheck', 'MCAuthority', 'w9', 'other', 'agreement' ),
       url: Joi.string().required(),
       name: Joi.string().required()
     })
-  ).required().custom((value, helpers) => {
-    const types = value.map(doc => doc.type);
-    const missingDocuments = requiredDocuments.filter(doc => !types.includes(doc));
-    if (missingDocuments.length > 0) {
-      return helpers.message(`Required documents are missing: ${missingDocuments.join(', ')}`);
-    }
-    return value;
-  })
+  ).optional()
 });
 
 const loginSchema = Joi.object({
