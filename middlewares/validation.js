@@ -40,7 +40,8 @@ const loginSchema = Joi.object({
 
 
   const validateCarrierSetup = (req, res, next) => {
-    console.log(req.body)
+    console.log(req.body);
+    console.log(req.files);
     const { error } = carrierSetupSchema.validate(req.body, { abortEarly: false });
     if (error) {
       const errors = error.details.map((err) => err.message);
