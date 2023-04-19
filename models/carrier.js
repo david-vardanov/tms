@@ -5,7 +5,7 @@ const BusinessSchema = require("./business");
 const paymentSchema = new Schema({
   paymentMethod: {
     type: String,
-    enum: ["factoring", "quickpay1", "quickpay3", "quickpay5"],
+    enum: ["factoring","standart", "quickpay1", "quickpay2", "quickpay3"],
     required: true,
   },
 });

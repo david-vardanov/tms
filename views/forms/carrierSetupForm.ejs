@@ -20,94 +20,117 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="email">Email</label>
-                  <input type="email" class="form-control" id="email" name="email" value="<%= formData.name || '' %>" required>
+                  <input type="email" class="form-control" id="email" name="email" value="<%= formData.email || '' %>" required>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="phone">Phone</label>
-                  <input type="text" class="form-control" id="phone" name="phone" value="<%= formData.name || '' %>" >
+                  <input type="text" class="form-control" id="phone" name="phone" value="<%= formData.phone || '' %>" >
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="phone">Owner Name</label>
-                  <input type="text" class="form-control" id="ownerName" name="ownerName" value="<%= formData.name || '' %>" >
+                  <input type="text" class="form-control" id="ownerName" name="ownerName" value="<%= formData.ownerName || '' %>" >
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="phone">Dispatcher Name</label>
-                  <input type="text" class="form-control" id="dispatcherName" name="dispatcherName" value="<%= formData.name || '' %>" >
+                  <input type="text" class="form-control" id="dispatcherName" name="dispatcherName" value="<%= formData.dispatcherName || '' %>" >
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="phone">Dispatcher Phone</label>
-                  <input type="text" class="form-control" id="dispatcherPhone" name="dispatcherPhone" value="<%= formData.name || '' %>" >
+                  <input type="text" class="form-control" id="dispatcherPhone" name="dispatcherPhone" value="<%= formData.dispatcherPhone || '' %>" >
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="phone">Dispatcher Email</label>
-                  <input type="text" class="form-control" id="dispatcherEmail" name="dispatcherEmail" value="<%= formData.name || '' %>" >
+                  <input type="text" class="form-control" id="dispatcherEmail" name="dispatcherEmail" value="<%= formData.dispatcherEmail || '' %>" >
                 </div>
               </div>
               <div class="col-md-8">
                 <div class="form-group">
                   <label for="address">Address</label>
-                  <input type="text" class="form-control" id="address" name="address" required value="<%= formData.name || '' %>" >
+                  <input type="text" class="form-control" id="address" name="address" required value="<%= formData.address || '' %>" >
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="form-group">
                   <label for="address2">Address 2</label>
-                  <input type="text" class="form-control" id="address2" name="address2" value="<%= formData.name || '' %>" >
+                  <input type="text" class="form-control" id="address2" name="address2" value="<%= formData.address2 || '' %>" >
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="city">City</label>
-                  <input type="text" class="form-control" id="city" name="city" value="<%= formData.name || '' %>" required>
+                  <input type="text" class="form-control" id="city" name="city" value="<%= formData.city || '' %>" required>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="form-group">
                   <label for="state">State</label>
-                  <input type="text" class="form-control" id="state" name="state" value="<%= formData.name || '' %>" required>
+                  <input type="text" class="form-control" id="state" name="state" value="<%= formData.state || '' %>" required>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="form-group">
                   <label for="zip">ZIP Code</label>
-                  <input type="text" class="form-control" id="zip" name="zip" value="<%= formData.name || '' %>" required>
+                  <input type="text" class="form-control" id="zip" name="zip" value="<%= formData.zip || '' %>" required>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="einNumber">EIN Number</label>
-                  <input type="text" class="form-control" id="einNumber" name="einNumber" value="<%= formData.name || '' %>"  required>
+                  <input type="text" class="form-control" id="einNumber" name="einNumber" value="<%= formData.einNumber || '' %>"  required>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="dotNumber">DOT Number</label>
-                  <input type="text" class="form-control" id="dotNumber" name="dotNumber" value="<%= formData.name || '' %>"  required>
+                  <input type="text" class="form-control" id="dotNumber" name="dotNumber" value="<%= formData.dotNumber || '' %>"  required>
                 </div>
               </div>
               <div class="col-md-3 my-3">
                 <div class="form-group">
                   <label for="paymentMethod">Payment Method</label>           
                     <div class="form-check">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="factoring" value="factoring" checked>
+                      <input class="form-check-input" type="radio" name="paymentMethod" id="factoring" value="factoring" 
+                      <% if (!formData.paymentMethod || formData.paymentMethod === 'factoring') { %>checked<% } %>>>
                       <label class="form-check-label" for="factoring">
                         Factoring
                       </label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay" value="quickpay">
-                      <label class="form-check-label" for="quickpay">
-                        Quickpay
+                      <input class="form-check-input" type="radio" name="paymentMethod" id="standart" value="standart"
+                      <% if (formData.paymentMethod === 'standart') { %>checked<% } %>>>
+                      <label class="form-check-label" for="quickpay1">
+                        NET 30 STANDARD
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay1" value="quickpay1"
+                      <% if (formData.paymentMethod === 'quickpay1') { %>checked<% } %>>>
+                      <label class="form-check-label" for="quickpay1">
+                        Quickpay 1 - 4 business days @ 5%
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay2" value="quickpay2"
+                      <% if (formData.paymentMethod === 'quickpay2') { %>checked<% } %>>>
+                      <label class="form-check-label" for="quickpay2">
+                        Quickpay 5 - 8 business days @ 3%
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay3" value="quickpay3"
+                      <% if (formData.paymentMethod === 'quickpay3') { %>checked<% } %>>>
+                      <label class="form-check-label" for="quickpay3">
+                        Quickpay 8 - 12 business days @ 1%
                       </label>
                     </div>
                 </div>
@@ -116,13 +139,13 @@
                 <div class="form-group" id="noaUpload">
                   <label for="noa">NOA (Notice of Assignment)</label>
                   <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="noa" name="noa" value="<%= formData.name || '' %>" >
+                    <input type="file" class="custom-file-input" id="noa" name="noa" value="<%= formData.noa || '' %>" >
                   </div>
                 </div>
                 <div class="form-group" id="voidCheckUpload">
                   <label for="noa">Void Check</label>
                   <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="voidCheck" name="voidCheck" value="<%= formData.name || '' %>" >
+                    <input type="file" class="custom-file-input" id="voidCheck" name="voidCheck" value="<%= formData.voidCheck || '' %>" >
                   </div>
                 </div>
               </div>
@@ -133,14 +156,14 @@
               <div class="form-group my-1" id="coiUpload">
                 <label for="coi">COI (Certificate of Insurance)</label>
                 <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="coi" name="coi" value="<%= formData.name || '' %>" >
+                  <input type="file" class="custom-file-input" id="coi" name="coi" value="<%= formData.coi || '' %>" >
                 </div>
               </div>
             
               <div class="form-group my-1" id="MCAuthorityUpload">
                 <label for="MCAuthority">MC Authority</label>
                 <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="MCAuthority" name="MCAuthority" value="<%= formData.name || '' %>" >
+                  <input type="file" class="custom-file-input" id="MCAuthority" name="MCAuthority" value="<%= formData.MCAuthority || '' %>" >
                 </div>
               </div>
             </div>
@@ -148,13 +171,13 @@
               <div class="form-group my-1" id="w9Upload">
                 <label for="w9">W9</label>
                 <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="w9" name="w9" value="<%= formData.name || '' %>" >
+                  <input type="file" class="custom-file-input" id="w9" name="w9" value="<%= formData.w9 || '' %>" >
                 </div>
               </div>
               <div class="form-group my-1" id="w9Upload">
                 <label for="otherFile">Other</label>
                 <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="otherFile" name="other" value="<%= formData.name || '' %>" >
+                  <input type="file" class="custom-file-input" id="otherFile" name="other" value="<%= formData.other || '' %>" >
                 </div>
               </div>
             </div>

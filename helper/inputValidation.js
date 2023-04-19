@@ -30,7 +30,7 @@ const validationSchemas = {
   }),
   paymentSchema: Joi.object({
     paymentMethod: Joi.string()
-      .valid('factoring', 'quickpay1', 'quickpay3', 'quickpay5')
+      .valid('factoring','standart', 'quickpay1', 'quickpay2', 'quickpay3')
       .required(),
   }),
   CarrierSchema: Joi.object({

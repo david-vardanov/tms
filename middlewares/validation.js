@@ -12,7 +12,7 @@ const carrierSetupSchema = Joi.object({
   zip: Joi.string().required(),
   einNumber: Joi.string().required(),
   dotNumber: Joi.string().required(),
-  paymentMethod: Joi.string().valid('factoring', 'quickpay').required(),
+  paymentMethod: Joi.string().valid("factoring","standart", "quickpay1", "quickpay2", "quickpay3").required(),
   token: Joi.string().required(),
   coi: Joi.any().required(),
   MCAuthority: Joi.any().required(),
