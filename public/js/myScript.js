@@ -129,6 +129,19 @@ $(".view-button").click(function () {
 
 });
 
+
+$(document).ready(function() {
+  // Show the loader when the form is submitted
+  $('form').on('submit', function() {
+    $('#loaderModal').modal('show');
+  });
+
+  // Hide the loader when the page finishes loading
+  $(window).on('load', function() {
+    $('#loaderModal').modal('hide');
+  });
+});
+
 $(document).ready(function() {
   function handleModerateCheckbox() {
     const $moderateCheckbox = $('#moderateCheckbox');

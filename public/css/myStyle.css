@@ -199,3 +199,23 @@ body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+#loaderModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#loaderModal .modal-dialog {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#loaderModal .modal-body {
+  color: #000;
+  font-size: 18px;
+  font-weight: bold;
+}
