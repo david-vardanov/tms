@@ -35,14 +35,15 @@ router.get('/carrier-setup', async (req, res) => {
   try {
     const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
     const invite = await Invite.findById(inviteId);
-    
+
     const mcNumber = invite.mcNumber;
     
     if (invite && moment().isBefore(invite.expiresAt)) {
       // Fetch the carrier using the mcNumber
       const formData = req.query.data ? JSON.parse(req.query.data) : {};
+      let files = req.session.files || {};
       // Render the carrierSetup view with the carrier data
-      res.render('carrierSetup', { mcNumber,invite, token, title: "Carrier Setup", flash: req.flash(), formData: formData });
+      res.render('carrierSetup', { mcNumber,invite, token, title: "Carrier Setup", flash: req.flash(), formData: formData, files });
     } else {
       res.status(400).send('The invite link is expired or invalid.');
     }
@@ -51,6 +52,16 @@ router.get('/carrier-setup', async (req, res) => {
   }
 });
 
+router.get("/remove-file", (req, res) => {
+  let fileType = req.query.type;
+  
+  if (req.session.files && req.session.files[fileType]) {
+    delete req.session.files[fileType];
+    res.status(200).json({ success: true, message: "File removed successfully" });
+  } else {
+    res.status(400).json({ success: false, message: "File not found or already removed" });
+  }
+});
 
 
 // POST
@@ -59,7 +70,10 @@ router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'li
   console.log("Request files:", req.files);
   try {
     const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, documentExpirationDate } = sanitizeInput(req.body, req);
-    const files = req.files;
+    const combinedFiles = {
+      ...req.session.files,
+      ...req.files
+    };
     const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
     console.log("Decoded token:", { inviteId });
     const invite = await Invite.findById(inviteId);
@@ -69,13 +83,15 @@ router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'li
       createdBy: invite.createdBy, 
       status: 'inModeration'
     });
+ 
+
 
 //this 
 const documentTypes = ['coi', 'liabilityInsuranceCertificate', 'noa', 'voidCheck', 'insurance', 'MCAuthority', 'w9', 'other'  ];
 
 documentTypes.forEach((type) => {
-  if (files[type]) {
-    let file = files[type][0],
+  if (combinedFiles[type]) {
+    let file = combinedFiles[type][0],
       newDocument = {
         type,
         url: file.key,
@@ -89,6 +105,7 @@ documentTypes.forEach((type) => {
     await newCarrier.save();
     invite.isExpired = true;
     await invite.save();
+    req.session.files = {}; // Clear the session files
     res.render('setupComplete', { title: "Setup Complete", user: invite.createdBy });
   } catch (err) {
     console.error(err);

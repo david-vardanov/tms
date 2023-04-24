@@ -55,7 +55,31 @@ $('#generate-invite-form').submit((event) => {
 
 
 
+$(document).ready(function() {
+  function removeFile(fileType, token) {
+    if (confirm('Are you sure you want to remove this file?')) {
+      const removeFileUrl = token ? `/carriers/remove-file?type=${fileType}&token=${token}` : `/carriers/remove-file?type=${fileType}`;
 
+      $.ajax({
+        url: removeFileUrl,
+        type: 'GET',
+        success: function() {
+          location.reload();
+        },
+        error: function(err) {
+          console.error('Error removing file:', err);
+          alert('An error occurred while removing the file. Please try again.');
+        }
+      });
+    }
+  }
+
+  // Attach click event handlers to remove buttons
+  $('button[data-remove-file]').on('click', function() {
+    const token = $('input[name="token"]').val();
+    removeFile($(this).data('remove-file'), token);
+  });
+});
 
 
 $('.view-invite').click(function() {
@@ -255,17 +279,23 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
+  function updateUploadVisibility() {
+    const selectedPaymentMethod = $('input[type=radio][name=paymentMethod]:checked').val();
+    if (selectedPaymentMethod == 'factoring') {
+      $('#voidCheckUpload').hide();
+      $('#noaUpload').show();
+    } else {
+      $('#noaUpload').hide();
+      $('#voidCheckUpload').show();
+    }
+  }
+
+  // Call the function on page load to set the initial visibility
+  updateUploadVisibility();
+
+  // Update the visibility when a radio button is changed
   $('input[type=radio][name=paymentMethod]').change(function() {
-    if (this.value == 'factoring') {
-      $('#voidCheckUpload').fadeOut(50, function() {
-        $('#noaUpload').fadeIn(50);
-      });
-    }
-    else {
-      $('#noaUpload').fadeOut(50, function() {
-        $('#voidCheckUpload').fadeIn(50);
-      });
-    }
+    updateUploadVisibility();
   });
 });
 

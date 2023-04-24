@@ -97,85 +97,127 @@
               </div>
               <div class="col-md-6 my-3">
                 <div class="form-group">
-                  <label for="paymentMethod">Payment Method</label>           
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="factoring" value="factoring" checked>
-                      <label class="form-check-label" for="factoring">
-                        Factoring
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="standart" value="standart">
-                      <label class="form-check-label" for="quickpay1">
-                        NET 30 STANDARD
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay1" value="quickpay1">
-                      <label class="form-check-label" for="quickpay1">
-                        Quickpay 1 - 4 business days @ 5%
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay2" value="quickpay2">
-                      <label class="form-check-label" for="quickpay2">
-                        Quickpay 5 - 8 business days @ 3%
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay3" value="quickpay3">
-                      <label class="form-check-label" for="quickpay3">
-                        Quickpay 8 - 12 business days @ 1%
-                      </label>
-                    </div>
+                  <label for="paymentMethod">Payment Method</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="factoring" value="factoring" <%= formData.paymentMethod === 'factoring' ? 'checked' : '' %>>
+                    <label class="form-check-label" for="factoring">
+                      Factoring
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="standart" value="standart" <%= formData.paymentMethod === 'standart' ? 'checked' : '' %>>
+                    <label class="form-check-label" for="standart">
+                      NET 30 STANDARD
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay1" value="quickpay1" <%= formData.paymentMethod === 'quickpay1' ? 'checked' : '' %>>
+                    <label class="form-check-label" for="quickpay1">
+                      Quickpay 1 - 4 business days @ 5%
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay2" value="quickpay2" <%= formData.paymentMethod === 'quickpay2' ? 'checked' : '' %>>
+                    <label class="form-check-label" for="quickpay2">
+                      Quickpay 5 - 8 business days @ 3%
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="quickpay3" value="quickpay3" <%= formData.paymentMethod === 'quickpay3' ? 'checked' : '' %>>
+                    <label class="form-check-label" for="quickpay3">
+                      Quickpay 8 - 12 business days @ 1%
+                    </label>
+                  </div>
                 </div>
+                
               </div>
               <div class="col-md-6 my-3">
+                <!-- NOA upload section -->
                 <div class="form-group" id="noaUpload">
                   <label for="noa">NOA (Notice of Assignment)</label>
-                  <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="noa" name="noa" value="<%= formData.noa || '' %>" >
-                  </div>
+                  <% if (files.noa) { %>
+                    <span><%= files.noa.originalname %></span>
+                    <button type="button" class="btn btn-danger btn-sm" data-remove-file="noa">Remove</button>
+                    <input type="hidden" name="noa" value="<%= files.noa.originalname %>">
+                  <% } else { %>
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input" id="noa" name="noa" value="<%= formData.noa || '' %>">
+                    </div>
+                  <% } %>
                 </div>
+
+                <!-- Void Check upload section -->
                 <div class="form-group" id="voidCheckUpload">
-                  <label for="noa">Void Check</label>
-                  <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="voidCheck" name="voidCheck" value="<%= formData.voidCheck || '' %>" >
-                  </div>
+                  <label for="voidCheck">Void Check</label>
+                  <% if (files.voidCheck) { %>
+                    <span><%= files.voidCheck.originalname %></span>
+                    <button type="button" class="btn btn-danger btn-sm" data-remove-file="voidCheck">Remove</button>
+                    <input type="hidden" name="voidCheck" value="<%= files.voidCheck.originalname %>">
+                  <% } else { %>
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input" id="voidCheck" name="voidCheck" value="<%= formData.voidCheck || '' %>">
+                    </div>
+                  <% } %>
                 </div>
-              </div>
             </div>
             <div class="row">
               <h4>Documents</h4>
-              <div class="col-md-6">            
-              <div class="form-group my-1" id="coiUpload">
-                <label for="coi">COI (Certificate of Insurance)</label>
-                <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="coi" name="coi" value="<%= formData.coi || '' %>" >
-                </div>
-              </div>
-            
-              <div class="form-group my-1" id="MCAuthorityUpload">
-                <label for="MCAuthority">MC Authority</label>
-                <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="MCAuthority" name="MCAuthority" value="<%= formData.MCAuthority || '' %>" >
-                </div>
-              </div>
+              <div class="col-md-6">
+                <!-- COI upload section -->
+                <div class="form-group" id="coiUpload">
+                  <label for="coi">COI (Certificate of Insurance)</label>
+                  <% if (files.coi) { %>
+                    <span><%= files.coi.originalname %></span>
+                    <button type="button" class="btn btn-danger btn-sm" data-remove-file="coi">Remove</button>
+                    <input type="hidden" name="coi" value="<%= files.coi.originalname %>">
+                  <% } else { %>
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input" id="coi" name="coi" value="<%= formData.coi || '' %>">
+                    </div>
+                  <% } %>
+                </div>            
+              <!-- COI upload section -->
+              <div class="form-group" id="MCAuthorityUpload">
+                <label for="MCAuthority">MC Authorithy</label>
+                <% if (files.MCAuthority) { %>
+                  <span><%= files.MCAuthority.originalname %></span>
+                  <button type="button" class="btn btn-danger btn-sm" data-remove-file="MCAuthority">Remove</button>
+                  <input type="hidden" name="MCAuthority" value="<%= files.MCAuthority.originalname %>">
+                <% } else { %>
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="MCAuthority" name="MCAuthority" value="<%= formData.MCAuthority || '' %>">
+                  </div>
+                <% } %>
+              </div> 
             </div>
             <div class="col-md-6">
-              <div class="form-group my-1" id="w9Upload">
-                <label for="w9">W9</label>
+              <!-- W9 upload section -->
+            <div class="form-group" id="w9Upload">
+              <label for="w9">W9</label>
+              <% if (files.w9) { %>
+                <span><%= files.w9.originalname %></span>
+                <button type="button" class="btn btn-danger btn-sm" data-remove-file="w9">Remove</button>
+                <input type="hidden" name="w9" value="<%= files.w9.originalname %>">
+              <% } else { %>
                 <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="w9" name="w9" value="<%= formData.w9 || '' %>" >
+                  <input type="file" class="custom-file-input" id="w9" name="w9" value="<%= formData.w9 || '' %>">
                 </div>
-              </div>
-              <div class="form-group my-1" id="w9Upload">
-                <label for="otherFile">Other</label>
+              <% } %>
+            </div> 
+            <!-- Other upload section -->
+            <div class="form-group" id="otherUpload">
+              <label for="other">Other File</label>
+              <% if (files.other) { %>
+                <span><%= files.other.originalname %></span>
+                <button type="button" class="btn btn-danger btn-sm" data-remove-file="other">Remove</button>
+                <input type="hidden" name="other" value="<%= files.other.originalname %>">
+              <% } else { %>
                 <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="otherFile" name="other" value="<%= formData.other || '' %>" >
+                  <input type="file" class="custom-file-input" id="other" name="other" value="<%= formData.other || '' %>">
                 </div>
-              </div>
+              <% } %>
             </div>
+          </div>
             </div>
             <hr>
             <div class="col-md-6">

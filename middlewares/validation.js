@@ -38,6 +38,22 @@ const carrierSetupSchema = Joi.object({
       location: Joi.string().required(),
     })
   ).required(),
+  noa: Joi.array().items(
+    Joi.object().unknown().keys({
+      fieldname: Joi.string().required(),
+      mimetype: Joi.string().required(),
+      size: Joi.number().required(),
+      location: Joi.string().required(),
+    })
+  ),
+  voidCheck: Joi.array().items(
+    Joi.object().unknown().keys({
+      fieldname: Joi.string().required(),
+      mimetype: Joi.string().required(),
+      size: Joi.number().required(),
+      location: Joi.string().required(),
+    })
+  ),
   other: Joi.array().items(
     Joi.object().unknown().keys({
       fieldname: Joi.string().optional(),
@@ -67,19 +83,26 @@ const loginSchema = Joi.object({
 
 
   const validateCarrierSetup = (req, res, next) => {
-
+    const combinedFiles = {
+      ...req.session.files,
+      ...req.files
+    };
+  
     const dataToValidate = {
       ...req.body,
-      coi: req.files['coi'],
-      MCAuthority: req.files['MCAuthority'],
-      w9: req.files['w9'],
-      other: req.files['other'],
+      coi: combinedFiles['coi'],
+      MCAuthority: combinedFiles['MCAuthority'],
+      w9: combinedFiles['w9'],
+      other: combinedFiles['other'],
+      noa: combinedFiles['noa'],
+      voidCheck: combinedFiles['voidCheck'],
     };
-    
+  
     const { error } = carrierSetupSchema.validate(dataToValidate, { abortEarly: false });
     if (error) {
       const errors = error.details.map((err) => err.message);
       req.flash('validationErrors', errors);
+      req.session.files = combinedFiles;
       return res.redirect(`/carriers/carrier-setup?token=${req.body.token}&data=${JSON.stringify(req.body)}`);
     }
     next();
