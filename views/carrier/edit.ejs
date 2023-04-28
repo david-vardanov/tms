@@ -3,95 +3,121 @@
 <div class="container mt-5">
   <h2>Edit Carrier</h2>
   <form action="/carriers/<%= carrier._id %>/?_method=PUT" method="POST">
-    <!-- Carrier Name -->
-    <div class="mb-3">
-      <label for="name" class="form-label">Name</label>
-      <input type="text" class="form-control" id="name" name="name" value="<%= carrier.name %>" required>
-    </div>
-    
-    <!-- Phone -->
-    <div class="mb-3">
-      <label for="phone" class="form-label">Phone</label>
-      <input type="text" class="form-control" id="phone" name="phone" value="<%= carrier.phone %>" required>
-    </div>
-    
-    <!-- Email -->
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" class="form-control" id="email" name="email" value="<%= carrier.email %>" required>
-    </div>
-    
-    <!-- DOT Number -->
-    <div class="mb-3">
-      <label for="dotNumber" class="form-label">DOT Number</label>
-      <input type="text" class="form-control" id="dotNumber" name="dotNumber" value="<%= carrier.dotNumber %>" required>
-    </div>
-    
-    <!-- EIN Number -->
-    <div class="mb-3">
-      <label for="einNumber" class="form-label">EIN Number</label>
-      <input type="text" class="form-control" id="einNumber" name="einNumber" value="<%= carrier.einNumber %>" required>
-    </div>
-    
-    <!-- Address -->
-    <div class="mb-3">
-      <label for="address" class="form-label">Address</label>
-      <input type="text" class="form-control" id="address" name="address" value="<%= carrier.address %>" required>
-    </div>
-    
-    <!-- Address 2 -->
-    <div class="mb-3">
-      <label for="address2" class="form-label">Address 2</label>
-      <input type="text" class="form-control" id="address2" name="address2" value="<%= carrier.address2 %>">
-    </div>
-    
-    <!-- City -->
-    <div class="mb-3">
-      <label for="city" class="form-label">City</label>
-      <input type="text" class="form-control" id="city" name="city" value="<%= carrier.city %>" required>
-    </div>
-    
-    <!-- State -->
-    <div class="mb-3">
-      <label for="state" class="form-label">State</label>
-      <input type="text" class="form-control" id="state" name="state" value="<%= carrier.state %>" required>
-    </div>
-    
-    <!-- Zip -->
-    <div class="mb-3">
-      <label for="zip" class="form-label">Zip</label>
-      <input type="text" class="form-control" id="zip" name="zip" value="<%= carrier.zip %>" required>
-    </div>
-    
-<!-- Payment Option -->
-<div class="form-group">
-    <label for="paymentOption">Payment Option</label>
-    <div>
-      <% carrier.schema.path('paymentMethod.type').enumValues.forEach(function(option) { %>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" id="paymentOption<%= option %>" name="paymentOption" value="<%= option %>" <% if (carrier.paymentMethod.type === option) { %>checked<% } %>>
-          <label class="form-check-label" for="paymentOption<%= option %>"><%= option %></label>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="form-group">
+          <label for="name">Company Name</label>
+          <input type="text" class="form-control" id="name" name="name" value="<%= carrier.name || '' %>" required>
         </div>
-      <% }); %>
-    </div>
-</div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" id="email" name="email" value="<%= carrier.email || '' %>" required>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input type="text" class="form-control" id="phone" name="phone" value="<%= carrier.phone || '' %>" >
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="phone">Owner Name</label>
+          <input type="text" class="form-control" id="ownerName" name="ownerName" value="<%= carrier.ownerName || '' %>" >
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="phone">Dispatcher Name</label>
+          <input type="text" class="form-control" id="dispatcherName" name="dispatcherName" value="<%= carrier.dispatcherName || '' %>" >
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="phone">Dispatcher Phone</label>
+          <input type="text" class="form-control" id="dispatcherPhone" name="dispatcherPhone" value="<%= carrier.dispatcherPhone || '' %>" >
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="phone">Dispatcher Email</label>
+          <input type="text" class="form-control" id="dispatcherEmail" name="dispatcherEmail" value="<%= carrier.dispatcherEmail || '' %>" >
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="form-group">
+          <label for="address">Address</label>
+          <input type="text" class="form-control" id="address" name="address" required value="<%= carrier.address || '' %>" >
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group">
+          <label for="address2">Address 2</label>
+          <input type="text" class="form-control" id="address2" name="address2" value="<%= carrier.address2 || '' %>" >
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="city">City</label>
+          <input type="text" class="form-control" id="city" name="city" value="<%= carrier.city || '' %>" required>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label for="state">State</label>
+          <input type="text" class="form-control" id="state" name="state" value="<%= carrier.state || '' %>" required>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label for="zip">ZIP Code</label>
+          <input type="text" class="form-control" id="zip" name="zip" value="<%= carrier.zip || '' %>" required>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="einNumber">EIN Number</label>
+          <input type="text" class="form-control" id="einNumber" name="einNumber" value="<%= carrier.einNumber || '' %>"  required>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="dotNumber">DOT Number</label>
+          <input type="text" class="form-control" id="dotNumber" name="dotNumber" value="<%= carrier.dotNumber || '' %>"  required>
+        </div>
+      </div>
+      <div class="col-md-6 my-3">
+        <div class="form-group">
+          <label for="paymentOption">Payment Option</label>
+          <div>
+            <% const paymentOptions = ["factoring", "standart", "quickpay1", "quickpay2", "quickpay3"]; %>
+            <% paymentOptions.forEach(function(option) { %>
+              <%- console.log('Payment method:', carrier.payment && carrier.payment.paymentMethod, 'Payment options:', paymentOptions) %>
 
-
-<button type="submit" class="btn btn-primary">Update</button>
-
-</form>
-
-
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="paymentOption<%= option %>" name="paymentOption" value="<%= option %>" <% if (carrier && carrier.payment && carrier.payment.paymentMethod === option) { %>checked<% } %>>
+                <label class="form-check-label" for="paymentOption<%= option %>"><%= option %></label>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+    </div> 
+    <button type="submit" class="btn btn-primary">Update</button>
+  </form>
 
 <!-- Delete Carrier Form -->
-<form id="deleteCarrierForm">
+<form id="deleteCarrierForm" class="my-3">
   <input type="hidden" id="carrierId" value="<%=carrier._id %>">
   <button type="button" onclick="deleteCarrier()" class="btn btn-danger">Delete Carrier</button>
 </form>
+
 <!-- Moderate Carrier Form -->
 <% if (carrier.status === 'inModeration') { %>
 
-  <form id="moderateCarrierForm" method="POST">
+  <form id="moderateCarrierForm" method="POST" class="my-3">
     <input type="hidden" name="_method" value="PUT">
     <input type="hidden" name="status" value="active">
     <input type="hidden" name="agreementAccepted" value="false">

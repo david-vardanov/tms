@@ -94,7 +94,7 @@ router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'li
   console.log("Request body:", req.body);
   console.log("Request files:", req.files);
   try {
-    const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, documentExpirationDate } = sanitizeInput(req.body, req);
+    const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, documentExpirationDate, dispatcherName, dispatcherEmail, dispatcherPhone, ownerName, signature } = sanitizeInput(req.body, req);
     const combinedFiles = {
       ...req.session.files,
       ...req.files
@@ -104,7 +104,7 @@ router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'li
     const invite = await Invite.findById(inviteId);
     console.log(req.user);
     const newCarrier = new Carrier({
-      name, mcNumber: invite.mcNumber, email, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod,
+      name, mcNumber: invite.mcNumber, email, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, dispatcherEmail, dispatcherName, dispatcherPhone, ownerName, signature,
       createdBy: invite.createdBy, 
       status: 'inModeration'
     });
@@ -249,26 +249,31 @@ router.get("/:id/documents/:docId/view", isAuthenticated, async (req, res) => {
 
 
   //update carrier route
-router.put('/:id',isAuthenticated, async (req, res) => {
-  try {
-    const carrierId = req.params.id;
-    const updates = sanitizeInput(req.body, req);
-
-    // Find the carrier by its ID and update it
-    const updatedCarrier = await Carrier.findByIdAndUpdate(carrierId, updates, { new: true });
-
-    // Check if the carrier was found and updated
-    if (updatedCarrier) {
-      res.redirect("/carriers/" + carrierId + "/edit");
-
-    } else {
-      res.status(404).json({ success: false, message: 'Carrier not found.' });
+  router.put('/:id', isAuthenticated, async (req, res) => {
+    try {
+      const carrierId = req.params.id;
+      const updates = sanitizeInput(req.body, req);
+  
+      // Include payment method in updates
+      if (req.body.paymentOption) {
+        updates.payment = { paymentMethod: req.body.paymentOption };
+      }
+  
+      // Find the carrier by its ID and update it
+      const updatedCarrier = await Carrier.findByIdAndUpdate(carrierId, updates, { new: true });
+  
+      // Check if the carrier was found and updated
+      if (updatedCarrier) {
+        res.redirect("/carriers/" + carrierId + "/edit");
+      } else {
+        res.status(404).json({ success: false, message: 'Carrier not found.' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Internal server error.' });
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Internal server error.' });
-  }
-});
+  });
+  
   
   // Edit carrier
 router.get('/:id/edit',isAuthenticated, async (req, res) => {
@@ -276,9 +281,10 @@ router.get('/:id/edit',isAuthenticated, async (req, res) => {
   try {
     const carrierId = req.params.id;
     console.log(carrierId);
-    const carrier = await Carrier.findById(carrierId);
+    const carrier = await Carrier.findById(carrierId).populate('payment');;
     
     if (carrier) {
+      console.log(carrier);
       res.render('carrier/edit', { carrier: carrier, title: "Edit Carrier" });
     } else {
       res.status(404).json({ success: false, message: 'Carrier not found.' });
