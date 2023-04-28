@@ -13,9 +13,12 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js " nonce="<%= nonce %>" crossorigin="anonymous"></script>
+
 </head>
 <body>
   <header>
+    <%- include('../modals/carrierModal.ejs') %>
+    
     <!-- Add your header content here -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container">
@@ -36,11 +39,23 @@
                 <li class="nav-item">
                   <a class="nav-link" href="/users/list">Users</a>
                 </li>
-              
+                <li class="nav-item">
+                  <div class="dropdown">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="search-input"
+                      placeholder="Search carrier by name or MC number"
+                    />
+                    <div class="dropdown-menu" id="search-results" data-bs-toggle="dropdown" aria-labelledby="search-input"></div>
+                  </div>
+                  
+                </li>
               <li class="nav-item">
                 <a class="nav-link" href="/invites/list">Invites</a>
               </li>
               <% } %>
+              
               <li class="nav-item">
                 <a class="nav-link" href="/logout">Logout</a>
               </li>

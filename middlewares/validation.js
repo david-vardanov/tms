@@ -16,42 +16,42 @@ const carrierSetupSchema = Joi.object({
   token: Joi.string().required(),
   coi: Joi.array().items(
     Joi.object().unknown().keys({
-      fieldname: Joi.string().required(),
-      mimetype: Joi.string().required(),
-      size: Joi.number().required(),
-      location: Joi.string().required(),
+      fieldname: Joi.string().optional(),
+      mimetype: Joi.string().optional(),
+      size: Joi.number().optional(),
+      location: Joi.string().optional(),
     })
-  ).required(),
+  ).optional(),
   MCAuthority: Joi.array().items(
     Joi.object().unknown().keys({
-      fieldname: Joi.string().required(),
-      mimetype: Joi.string().required(),
-      size: Joi.number().required(),
-      location: Joi.string().required(),
+      fieldname: Joi.string().optional(),
+      mimetype: Joi.string().optional(),
+      size: Joi.number().optional(),
+      location: Joi.string().optional(),
     })
-  ).required(),
+  ).optional(),
   w9: Joi.array().items(
     Joi.object().unknown().keys({
-      fieldname: Joi.string().required(),
-      mimetype: Joi.string().required(),
-      size: Joi.number().required(),
-      location: Joi.string().required(),
+      fieldname: Joi.string().optional(),
+      mimetype: Joi.string().optional(),
+      size: Joi.number().optional(),
+      location: Joi.string().optional(),
     })
-  ).required(),
+  ).optional(),
   noa: Joi.array().items(
     Joi.object().unknown().keys({
-      fieldname: Joi.string().required(),
-      mimetype: Joi.string().required(),
-      size: Joi.number().required(),
-      location: Joi.string().required(),
+      fieldname: Joi.string().optional(),
+      mimetype: Joi.string().optional(),
+      size: Joi.number().optional(),
+      location: Joi.string().optional(),
     })
   ),
   voidCheck: Joi.array().items(
     Joi.object().unknown().keys({
-      fieldname: Joi.string().required(),
-      mimetype: Joi.string().required(),
-      size: Joi.number().required(),
-      location: Joi.string().required(),
+      fieldname: Joi.string().optional(),
+      mimetype: Joi.string().optional(),
+      size: Joi.number().optional(),
+      location: Joi.string().optional(),
     })
   ),
   other: Joi.array().items(

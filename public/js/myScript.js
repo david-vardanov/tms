@@ -53,6 +53,70 @@ $('#generate-invite-form').submit((event) => {
   });
 });
 
+$(document).ready(function () {
+  function loadCarrierDataAndShowModal(carrierId) {
+    $.ajax({
+      url: '/carriers/' + carrierId, // Replace this with the correct route to fetch the carrier data by ID
+      type: 'GET',
+      dataType: 'json',
+      success: function (carrier) {
+        // Populate the carrier modal with the fetched data
+        $('#carrierModal .carrier-name').text(carrier.name);
+        $('#carrierModal .carrier-mc-number').text(carrier.mcNumber);
+        // Add any other necessary fields to be populated in the modal
+  
+        // Show the carrier modal
+        $('#carrierModal').modal('show');
+      },
+      error: function (error) {
+        console.error('Error fetching carrier data:', error);
+      },
+    });
+  }
+  
+
+
+  let searchTimeout;
+  const $searchInput = $("#search-input");
+  const $searchResults = $("#search-results");
+
+  $searchInput.on("input", function () {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      const query = $searchInput.val();
+      if (query.length >= 3) {
+        $.ajax({
+          url: "/carriers/search",
+          method: "GET",
+          data: { query },
+          success: function (data) {
+            $searchResults.empty(); // Clear the search results dropdown before appending new items
+            if (data.carriers.length > 0) { // Check if there are any results
+              data.carriers.forEach(function (carrier) {
+                let carrierItem = $('<a>')
+                .addClass('dropdown-item carrier-search-result view-button')
+                .attr('href', '#')
+                .data('id', carrier._id) 
+                .text(`${carrier.name} (${carrier.mcNumber})`);
+
+                $searchResults.append(carrierItem); // Update this line
+                $searchResults.append(carrierItem.addClass("btn btn-primary btn-sm view-button"));
+
+              });
+              $searchResults.addClass('show'); // Show the dropdown menu when there are search results
+            } else {
+              $searchResults.removeClass('show'); // Hide the dropdown menu when there are no search results
+            }
+          },
+        });
+      } else {
+        $searchResults.empty();
+        $searchResults.removeClass("show");
+
+      }
+    }, 1234);
+  });
+});
 
 
 $(document).ready(function() {
@@ -116,7 +180,7 @@ $(document).ready(function () {
 
 });
 
-$(".view-button").click(function () {
+$(document).on('click', '.view-button', function () {
   $("#globalLoader").show();
 
   var id = $(this).data("id");
@@ -125,8 +189,6 @@ $(".view-button").click(function () {
     $("#carrier-popup").modal("show");
   });
   $("#globalLoader").hide();
-
-
 });
 
 

@@ -8,6 +8,7 @@ const Business = require('../models/business');
 const User = require('../models/user');
 const Document = require('../models/document');
 const paginate = require('express-paginate');
+const { debounce } = require('lodash');
 
 const { sanitizeInput } = require('../middlewares/sanitize');
 const { validateCarrierSetup } = require('../middlewares/validation');
@@ -51,6 +52,30 @@ router.get('/carrier-setup', async (req, res) => {
     res.status(400).send('The invite link is expired or invalid.');
   }
 });
+
+router.get("/search", isAuthenticated, async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (query && query.length >= 3) {
+      const carriers = await Carrier.find({
+        $or: [
+          { name: { $regex: query, $options: "i" } },
+          { mcNumber: { $regex: query, $options: "i" } },
+        ],
+      })
+        .limit(10)
+        .lean();
+
+      res.status(200).json({ success: true, carriers });
+    } else {
+      res.status(400).json({ success: false, message: "Invalid query" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
 
 router.get("/remove-file", (req, res) => {
   let fileType = req.query.type;
@@ -164,8 +189,9 @@ router.get('/setup-complete', async (req, res) => {
     }
   });
   
+
+
   
-  //carrier show
 
 // routes/carriers.js
 router.get("/:id", isAuthenticated, async (req, res) => {

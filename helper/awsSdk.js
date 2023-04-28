@@ -5,7 +5,7 @@ const multerS3 = require('multer-s3');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const Invite = require('../models/invite');
-// const https = require('https');
+const https = require('https');
 
 const s3 = new S3({
   endpoint: process.env.ENDPOINT,
