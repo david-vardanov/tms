@@ -70,8 +70,8 @@ const carrierSetupSchema = Joi.object({
   documents: Joi.array().items(
     Joi.object({
       type: Joi.string().valid('coi', 'noa', 'voidCheck', 'MCAuthority', 'w9', 'other', 'agreement' ),
-      url: Joi.string().required(),
-      name: Joi.string().required()
+      url: Joi.string().optional(),
+      name: Joi.string().optional()
     })
   ).optional()
 });

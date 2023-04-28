@@ -8,9 +8,11 @@
 
 
 
-<%- include('agent.ejs') %>
-
-<%- include('moderator.ejs') %>
+<% if(user.role === 'agent') { %>
+    <%- include('agent.ejs') %>
+<% } else { %>
+    <%- include('moderator.ejs') %>
+<% } %>
 
 
 </div>

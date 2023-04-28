@@ -33,24 +33,25 @@
                 <a class="nav-link" href="/">Dashboard</a>
               </li>
               <li class="nav-item">
+                <div class="dropdown">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="search-input"
+                    placeholder="Search by name or MC"
+                  />
+                  <div class="dropdown-menu" id="search-results" data-bs-toggle="dropdown" aria-labelledby="search-input"></div>
+                </div>
+                
+              </li>
+              <li class="nav-item mx-3">
                 <a class="nav-link" href="/carriers/list">Carriers</a>
               </li>
-              <% if (user && user.role === 'moderator' || 'admin') { %>
+              <% if (user.role === 'moderator' || user.role === 'admin') {                %>
                 <li class="nav-item">
                   <a class="nav-link" href="/users/list">Users</a>
                 </li>
-                <li class="nav-item">
-                  <div class="dropdown">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="search-input"
-                      placeholder="Search carrier by name or MC number"
-                    />
-                    <div class="dropdown-menu" id="search-results" data-bs-toggle="dropdown" aria-labelledby="search-input"></div>
-                  </div>
-                  
-                </li>
+                
               <li class="nav-item">
                 <a class="nav-link" href="/invites/list">Invites</a>
               </li>

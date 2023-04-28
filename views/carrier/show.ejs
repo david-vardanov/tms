@@ -57,7 +57,7 @@
           <!-- BOTTOM -->
           <div class="row">
             <div class="col-md-4">
-              <% if (carrier.status === 'inModeration') { %>
+              <% if (carrier.status === 'inModeration' && (user.role === 'moderator' || user.role === 'admin')) { %>
                 <form id="moderateCarrierForm" action="/carriers/<%= carrier._id %>/moderate" method="post">
                   <button class="btn btn-primary btn-sm" id="moderateButton" disabled>Moderate</button>
                   <div>
@@ -76,7 +76,7 @@
                 <% } %>
             </div>
             <div class="col-md-4">
-              <button class="btn btn-secondary btn-sm">Edit</button>
+              <!-- <button class="btn btn-secondary btn-sm">Edit</button> -->
             </div>
           </div>
           </div>
