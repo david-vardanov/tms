@@ -91,8 +91,6 @@ router.get("/remove-file", (req, res) => {
 
 // POST
 router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'liabilityInsuranceCertificate' }, { name: 'noa' }, { name: 'voidCheck' }, {name: 'insurance'}, {name: 'MCAuthority'}, {name: 'w9'}, {name: 'other'}]), validateCarrierSetup, async (req, res) => {
-  console.log("Request body:", req.body);
-  console.log("Request files:", req.files);
   try {
     const { email, token, name, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, documentExpirationDate, dispatcherName, dispatcherEmail, dispatcherPhone, ownerName, signature } = sanitizeInput(req.body, req);
     const combinedFiles = {
@@ -100,18 +98,15 @@ router.post('/submit-carrier-setup', upload.fields([{ name: 'coi' }, { name: 'li
       ...req.files
     };
     const { inviteId } = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded token:", { inviteId });
+
     const invite = await Invite.findById(inviteId);
-    console.log(req.user);
+
     const newCarrier = new Carrier({
-      name, mcNumber: invite.mcNumber, email, phone, address, address2, city, state, zip, einNumber, dotNumber, paymentMethod, dispatcherEmail, dispatcherName, dispatcherPhone, ownerName, signature,
+      name, mcNumber: invite.mcNumber, email, phone, address, address2, city, state, zip, einNumber, dotNumber, payment: { paymentMethod }, dispatcherEmail, dispatcherName, dispatcherPhone, ownerName, signature,
       createdBy: invite.createdBy, 
       status: 'inModeration'
     });
- 
 
-
-//this 
 const documentTypes = ['coi', 'liabilityInsuranceCertificate', 'noa', 'voidCheck', 'insurance', 'MCAuthority', 'w9', 'other'  ];
 
 documentTypes.forEach((type) => {
@@ -126,7 +121,7 @@ documentTypes.forEach((type) => {
   }
 });
 
-//this
+
     await newCarrier.save();
     invite.isExpired = true;
     await invite.save();
@@ -219,10 +214,10 @@ router.get("/:id/documents/:docId/view", isAuthenticated, async (req, res) => {
     let document = carrier.documents.id(req.params.docId);
     
     if (!document) return res.status(404).send("Document not found");
-    console.log(process.env.S3_BUCKET_NAME);
-    console.log(process.env.S3_REGION);
+
+
     let objectKey = document.url;
-    console.log(objectKey);
+
     
     let getObjectParams = { 
       Bucket: process.env.S3_BUCKET_NAME, 
@@ -231,11 +226,11 @@ router.get("/:id/documents/:docId/view", isAuthenticated, async (req, res) => {
     let presignedUrl;
     
     try {
-      console.log("Generating presigned URL");
+
       presignedUrl = await getSignedUrl(s3Client, new GetObjectCommand(getObjectParams), { expiresIn: 300 });
-      console.log(presignedUrl)
+
     } catch (err) {
-      console.error("Error generating presigned URL:", err);
+
       return res.status(500).send("Internal server error");
     }
 
@@ -280,11 +275,11 @@ router.get('/:id/edit',isAuthenticated, async (req, res) => {
   
   try {
     const carrierId = req.params.id;
-    console.log(carrierId);
+
     const carrier = await Carrier.findById(carrierId).populate('payment');;
     
     if (carrier) {
-      console.log(carrier);
+
       res.render('carrier/edit', { carrier: carrier, title: "Edit Carrier" });
     } else {
       res.status(404).json({ success: false, message: 'Carrier not found.' });
@@ -392,7 +387,7 @@ router.post('/:id/decline', async (req, res) => {
 
     const updatedCarrier = await Carrier.findByIdAndUpdate(carrierId, { status: "Declined" }, { new: true });
     await updatedCarrier.save();
-    console.log(updatedCarrier);
+
     res.redirect('/');
   } catch (error) {
     console.error(error);

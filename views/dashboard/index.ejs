@@ -8,7 +8,7 @@
 
 
 
-<% if(user.role === 'agent') { %>
+<% if(user.role === 'agent' || 'moderator' || 'admin') { %>
     <%- include('agent.ejs') %>
 <% } else { %>
     <%- include('moderator.ejs') %>
