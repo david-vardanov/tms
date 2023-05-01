@@ -191,14 +191,14 @@ router.get('/setup-complete', async (req, res) => {
 // routes/carriers.js
 router.get("/:id", isAuthenticated, async (req, res) => {
   try {
-    const carrier = await Carrier.findById(req.params.id).populate("documents").populate("payments").populate("createdBy");
+    const carrier = await Carrier.findById(req.params.id).populate("documents").populate("createdBy");
     const invite = await Invite.find({ mcNumber: carrier.mcNumber }).populate("logs");
+    console.log(carrier);
     res.render("carrier/show", {
       invite: invite,
       carrier: carrier,
       logs: invite.logs,
       documents: carrier.documents,
-      payments: carrier.payments,
       title: "Carrier Details",
     });
   } catch (err) {
