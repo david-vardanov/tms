@@ -24,7 +24,9 @@
                 <li>City: <%= carrier.city %></li>
                 <li>State: <%= carrier.state %></li>
                 <li>Zip: <%= carrier.zip %></li>
-                <li>Payment: <%= carrier.payment.paymentMethod %> </li>
+                <% if(carrier.payment.paymentMethod) { %><li>Payment: <%= carrier.payment.paymentMethod %> </li> <% } else {%>
+                  <li>No payment method selected</li>
+                  <% } %>
                 <li>Invited by: <%= invite.createdBy %></li>
               </ul>
             </div>
