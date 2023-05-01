@@ -6,12 +6,14 @@
 
     <h1>Dashboard</h1>
 
-
-
-<% if(user.role === 'agent' || 'moderator' || 'admin') { %>
+<% if(user.role === 'admin') { %>
     <%- include('agent.ejs') %>
-<% } else { %>
     <%- include('moderator.ejs') %>
+<% } else if(user.role ===  'moderator' )  { %>
+    <%- include('agent.ejs') %>
+    <%- include('moderator.ejs') %>
+<% } else if(user.role ===  'agent' )  { %>
+    <%- include('agent.ejs') %>
 <% } %>
 
 
