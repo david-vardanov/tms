@@ -5,10 +5,10 @@
     <div class="hero__content">
       <h1 class="hero__title">Welcome to AGDLogistics.com</h1>
       <p class="">Welcome to AGD Logistics, the premier freight brokerage company in the United States, specializing in Full Truckload (FTL), Less Than Truckload (LTL), and Partial Load transportation services. Founded on April 21, 2020, we have rapidly established ourselves as a reliable and customer-focused partner for all your shipping and transportation needs.</p>
-      <a href="#" class="hero__button">Get a Quote</a>
+      <!-- <a href="#" class="hero__button">Get a Quote</a> -->
     </div>
-  </section>
-  <section class="about-us my-5">
+</section>
+<section class="about-us my-5">
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -22,36 +22,25 @@
         </div>
     </div>
 </section>
-  <% if(user && user.role != "guest") { %>
-  <form id="generate-invite-form" method="post" action="/invites/generate-invite-link">
-    <div class="form-group">
-      <label for="mc-number-input">MC Number</label>
-      <input type="text" class="form-control" id="mc-number-input" name="mcNumber" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Generate Invite Link</button>
-  </form>
-  <div id="invite-url-preview"></div>
-  <% } else { %> 
-    
-    <% } %>
+
   <!-- Add this to your HTML file -->
-  <div class="section">
+  <section>
     <div class="container">
       <div class="row">
         <div class="col-md-6 mb-4">
-          <div class="card h-100 shadow-sm hover-shadow">
+          <div class="card shadow-sm hover-shadow">
             <div class="card-body text-center">
               <i class="bi bi-people feature-icon"></i>
               <h3 class="card-title mb-3">For Business</h3>
               <h6 class="card-subtitle mb-2 font-weight-bold">Freight Management</h6>
               <p class="card-text">Let us manage the entire transportation process, from arranging pick-ups and deliveries to tracking shipments and resolving any issues that may arise.</p>
-              <a href="/business" class="btn btn-primary">Learn More</a>
+              <a href="/partnership" class="btn btn-primary">Learn More</a>
             </div>
           </div>
         </div>
-      
+    
         <div class="col-md-6 mb-4">
-          <div class="card h-100 shadow-sm hover-shadow">
+          <div class="card shadow-sm hover-shadow">
             <div class="card-body text-center">
               <i class="bi bi-truck feature-icon"></i>
               <h3 class="card-title mb-3">For Carriers</h3>
@@ -61,15 +50,18 @@
             </div>
           </div>
         </div>
-      
       </div>
-
     </div>
-  </div>
+  </section>
+
+  <section class="mt-5">
+    <%- include('partials/services.ejs') %>
+  </section>
+  <section>
+    <%- include('partials/testimonials.ejs') %>
+  </section>
   
+</div>
   
-  </div>
-  <%- include('partials/services.ejs') %>
-  <%- include('partials/testimonials.ejs') %>
   
   

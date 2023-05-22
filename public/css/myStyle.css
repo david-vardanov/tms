@@ -83,6 +83,10 @@
     filter: invert(1);
   }  
 
+  .carousel-indicators {
+    visibility: hidden !important;
+  }
+
   .setup-step {
     position: relative;
     padding: 20px;

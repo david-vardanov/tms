@@ -1,7 +1,60 @@
 
-
-
-
+// Define path to testimonials file
+$(document).ready(function() {
+  const testimonialsFile = '../testimonials.txt';
+  if($('.testimonials').length) {
+    // Get the testimonials from the file
+    fetch(testimonialsFile)
+      .then(response => response.text())
+      .then(data => {
+        // Split the testimonials into an array
+        const testimonials = data.split('\n');
+    
+        // Get the carousel indicators and inner element
+        const indicators = document.querySelector('.carousel-indicators');
+        const inner = document.querySelector('.carousel-inner');
+    
+        // Loop through the testimonials and create carousel items and indicators
+        testimonials.forEach((testimonial, index) => {
+          // Create carousel item
+          const item = document.createElement('div');
+          item.classList.add('carousel-item');
+          
+    
+          // Create testimonial element and add to carousel item
+          const testimonialEl = document.createElement('p');
+          testimonialEl.classList.add('text-center')
+          testimonialEl.textContent = testimonial;
+          item.appendChild(testimonialEl);
+    
+          // Add active class to first item
+          if (index === 0) {
+            item.classList.add('active');
+          }
+    
+          // Add carousel item to inner element
+          inner.appendChild(item);
+    
+          // Create indicator and add to indicator element
+          const indicator = document.createElement('li');
+          indicator.setAttribute('data-target', '#testimonials');
+          indicator.setAttribute('data-slide-to', index.toString());
+    
+          // Add active class to first indicator
+          if (index === 0) {
+            indicator.classList.add('active');
+          }
+    
+          // Add indicator to indicator element
+          indicators.appendChild(indicator);
+        });
+      })
+      .catch(error => console.error('Error loading testimonials:', error));
+    
+    // Enable the carousel
+    $('#testimonials').carousel();
+    }
+  });
 
 
 function showFlashMessage(flashType, message) {
@@ -54,28 +107,6 @@ $('#generate-invite-form').submit((event) => {
 });
 
 $(document).ready(function () {
-  function loadCarrierDataAndShowModal(carrierId) {
-    $.ajax({
-      url: '/carriers/' + carrierId, // Replace this with the correct route to fetch the carrier data by ID
-      type: 'GET',
-      dataType: 'json',
-      success: function (carrier) {
-        // Populate the carrier modal with the fetched data
-        $('#carrierModal .carrier-name').text(carrier.name);
-        $('#carrierModal .carrier-mc-number').text(carrier.mcNumber);
-        // Add any other necessary fields to be populated in the modal
-  
-        // Show the carrier modal
-        $('#carrierModal').modal('show');
-      },
-      error: function (error) {
-        console.error('Error fetching carrier data:', error);
-      },
-    });
-  }
-  
-
-
   let searchTimeout;
   const $searchInput = $("#search-input");
   const $searchResults = $("#search-results");
@@ -117,6 +148,51 @@ $(document).ready(function () {
     }, 1234);
   });
 });
+
+
+
+$(document).ready(function() {
+  $('.select2-input').each(function() {
+      let searchRoute = '';
+      let dataType = '';
+      if (this.id === 'carrier') {
+        console.log(this)
+          searchRoute = '/carriers/search';
+          dataType = 'carriers';
+      } else if (this.id === 'broker') {
+          searchRoute = '/brokers/search';
+          dataType = 'brokers';
+      } else if (this.id === 'assignedUser') {
+          searchRoute = '/users/search';
+          dataType = 'users';
+      }
+
+      $(this).select2({
+          minimumInputLength: 3,  // minimum number of characters required to start a search
+          delay: 1500,  // delay in milliseconds after a keystroke is activated
+          ajax: {
+              url: searchRoute,
+              data: function(params) {
+                  return {
+                      query: params.term  // search term
+                  };
+              },
+              processResults: function (data) {
+                console.log(data)
+                return {
+                  results: data[dataType].map(function(item) {
+                    return {
+                            id: item._id, 
+                            text: dataType === 'users' ? item.username : item.name
+                          }
+                    })
+                };
+            }
+          }
+      });
+  });
+});
+
 
 
 $(document).ready(function() {
@@ -180,7 +256,7 @@ $(document).ready(function () {
 
 });
 
-$(document).on('click', '.view-button', function () {
+$(document).on('click', '.view-carrier-button', function () {
   $("#globalLoader").show();
 
   var id = $(this).data("id");
@@ -191,6 +267,14 @@ $(document).on('click', '.view-button', function () {
   $("#globalLoader").hide();
 });
 
+$('.view-broker-button').click(function() {
+  var id = $(this).data('id'); // Get the ID of the broker from the data attribute
+  $.get('/brokers/' + id, function(data) { // Make a GET request to the server to get the broker data
+
+    $('#broker-popup .modal-body').html(data); // Update the popup's body with the broker/show.ejs template
+    $('#broker-popup').modal('show'); // Show the popup
+  });
+});
 
 $(document).ready(function() {
   // Show the loader when the form is submitted
@@ -223,7 +307,7 @@ $(document).ready(function() {
   }
 
   const $carrierModal = $('#carrier-popup');
-
+  const $brokerModal = $('#broker-popup');
   if ($carrierModal.length > 0) {
     $carrierModal.on('shown.bs.modal', handleModerateCheckbox);
     handleModerateCheckbox();
@@ -283,7 +367,27 @@ $(document).ready(function() {
 });
 
 
+$(document).ready(function() {
+  $(".btn-delete-broker").on("click", function(event) {
+    event.preventDefault();
+    const brokerId = $(this).data("id");
 
+    if (confirm("Are you sure you want to delete this broker?")) {
+      // If the user clicks "OK", send the request to the server
+      $.ajax({
+        type: "DELETE",
+        url: `/brokers/${brokerId}`,
+        success: function() {
+          // Reload the page after the invite is deleted
+          location.reload();
+        },
+        error: function() {
+          alert("Error deleting invite. Please try again later.");
+        }
+      });
+    }
+  });
+});
 
 
 
@@ -309,6 +413,8 @@ $(document).ready(function() {
     }
   });
 });
+
+
 
 $(document).ready(function() {
   $(".btn-delete-user").on("click", function(event) {
@@ -375,84 +481,3 @@ $(document).ready(function() {
 });
 
 
-// Define path to testimonials file
-
-$(document).ready(function() {
-const testimonialsFile = '../testimonials.txt';
-if($('.testimonials').length) {
-  // Get the testimonials from the file
-  fetch(testimonialsFile)
-    .then(response => response.text())
-    .then(data => {
-      // Split the testimonials into an array
-      const testimonials = data.split('\n');
-  
-      // Get the carousel indicators and inner element
-      const indicators = document.querySelector('.carousel-indicators');
-      const inner = document.querySelector('.carousel-inner');
-  
-      // Loop through the testimonials and create carousel items and indicators
-      testimonials.forEach((testimonial, index) => {
-        // Create carousel item
-        const item = document.createElement('div');
-        item.classList.add('carousel-item');
-        
-  
-        // Create testimonial element and add to carousel item
-        const testimonialEl = document.createElement('p');
-        testimonialEl.classList.add('text-center')
-        testimonialEl.textContent = testimonial;
-        item.appendChild(testimonialEl);
-  
-        // Add active class to first item
-        if (index === 0) {
-          item.classList.add('active');
-        }
-  
-        // Add carousel item to inner element
-        inner.appendChild(item);
-  
-        // Create indicator and add to indicator element
-        const indicator = document.createElement('li');
-        indicator.setAttribute('data-target', '#testimonials');
-        indicator.setAttribute('data-slide-to', index.toString());
-  
-        // Add active class to first indicator
-        if (index === 0) {
-          indicator.classList.add('active');
-        }
-  
-        // Add indicator to indicator element
-        indicators.appendChild(indicator);
-      });
-    })
-    .catch(error => console.error('Error loading testimonials:', error));
-  
-  // Enable the carousel
-  $('#testimonials').carousel();
-  }
-});
-
-// $(document).ready(() => {
-//   $('#carrier-setup-form').submit((event) => {
-//     event.preventDefault();
-//     const formData = $('#carrier-setup-form').serialize();
-//     $.ajax({
-//       url: '/carriers/submit-carrier-setup',
-//       method: 'POST',
-//       data: formData,
-//       dataType: 'json',
-//       success: (response) => {
-//         if (response.success) {
-//           alert('Carrier setup completed successfully.')
-
-//         } else {
-//           alert('An error occurred: ' + response.error);
-//         }
-//       },
-//       error: (error) => {
-//         console.error(error);
-//       }
-//     });
-//   });
-// });

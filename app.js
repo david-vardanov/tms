@@ -11,12 +11,6 @@ const crypto = require('crypto');
 const https = require('https');
 const fs = require('fs');
 
-// 
-
-
-
-
-
 const methodOverride = require('method-override');
 const expressSanitizer = require('express-sanitizer');
 
@@ -24,7 +18,6 @@ const db = require('./config/db');
 const passportConfig = require('./config/passport');
 const { handleError, setUserLocal } = require('./middlewares');
 const routes = require('./routes');
-
 
 db.connect();
 
@@ -56,7 +49,6 @@ app.use(
   })
 );
 
-
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -78,11 +70,9 @@ app.use('/docs', express.static(path.join(__dirname, 'docs')));
 
 app.set('views', path.join(__dirname, 'views'));
 
-
 app.use(express.static('uploads'));
 app.use(express.static('public'));
 app.use('/.well-known', express.static('public/.well-known'));
-
 
 app.use(flash());
 app.use(setUserLocal);
@@ -90,8 +80,6 @@ app.use(methodOverride('_method'));
 
 app.use(routes);
 app.use(handleError);
-
-
 
 if(process.env.NODE_ENV === 'development') { 
   app.listen(process.env.PORT, () => {

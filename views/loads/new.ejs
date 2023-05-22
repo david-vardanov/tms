@@ -1,0 +1,66 @@
+<% layout('layout.ejs') %>
+<div class="container">
+    <h1>Add Load</h1>
+    <form action="/loads" method="POST">
+        
+        <!-- Add a hidden field or a select dropdown for carrier and broker, based on your application design -->
+        <div class="form-group">
+            <label for="mode">Mode</label>
+            <select id="mode" name="mode" class="form-control" required>
+                <option value="Full Truck Load">Full Truck Load</option>
+                <option value="Less Than Truck Load">Less Than Truck Load</option>
+                <option value="Partial Truck Load">Partial Truck Load</option>
+                <option value="Dedicated Truck Load">Dedicated Truck Load</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="carrier">Carrier</label>
+            <select id="carrier" name="carrier" class="form-control select2-input broker-select2">
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="broker">Broker</label>
+            <select id="broker" name="broker" class="form-control select2-input carrier-select2">
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="assignedUser">Assigned User</label>
+            <select id="assignedUser" name="assignedUser" class="form-control select2-input agent-select2">
+            </select>
+        </div>
+        
+
+        <div class="form-group">
+            <label for="equipment">Equipment</label>
+            <select id="equipment" name="equipment" class="form-control" required>
+                <option value="Flatbed">Flatbed</option>
+                <option value="Refrigerated">Refrigerated</option>
+                <option value="Dry Van">Dry Van</option>
+                <option value="Step Deck">Step Deck</option>
+                <option value="Double Drop">Double Drop</option>
+                <option value="Removable Gooseneck">Removable Gooseneck</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="weight">Weight</label>
+            <input type="text" id="weight" name="details[weight]" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="dimensions">Dimensions</label>
+            <input type="text" id="length" name="details[dimensions][length]" placeholder="length" class="form-control">
+            <input type="text" id="width" name="details[dimensions][width]" placeholder="width" class="form-control">
+            <input type="text" id="height" name="details[dimensions][height]" placeholder="height" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="comments">Comments</label>
+            <textarea id="comments" name="comments" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="specialInstructions">Special Instructions</label>
+            <textarea id="specialInstructions" name="specialInstructions" class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>

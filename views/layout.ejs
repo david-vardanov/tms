@@ -2,7 +2,16 @@
 
 <div class="pageContent">
   <%- include('partials/flash.ejs') %>
-  <%if(user) { %> <h3>Welcome: <%=user.username%></h3> <% } %>
-  <%- body %>
+  <%if(user) { %>
+    <div class="container my-3">
+      <div class="row">
+        <h6 class="text-muted">Welcome <%=user.username%></h6> 
+      </div>
+    </div>
+  <% } %>
+  <div class="container ">
+    <%- body %>
+  </div>
+  
   <%- include('partials/footer.ejs') %>
 </div>

@@ -7,7 +7,7 @@ const moment = require('moment');
 const Carrier = require('../models/carrier');
 const Invite = require('../models/invite');
 const User = require('../models/user');
-const sendEmail = require('../helper/send-email');
+// const sendEmail = require('../helper/send-email');
 const paginate = require('express-paginate');
 const Log = require('../models/log'); // Import the Log model
 const isAuthenticated = require('../middlewares/authMiddleware');
@@ -15,7 +15,7 @@ const uaParser = require('ua-parser-js');
 // Other routes...
 
 router.post('/generate-invite-link', async (req, res) => {
-  console.log("mta")
+
   const { mcNumber, email } = req.body;
   const existingCarrier = await Carrier.findOne({ mcNumber });
   if (existingCarrier) {
@@ -40,7 +40,7 @@ router.post('/generate-invite-link', async (req, res) => {
       { expiresIn: '2h' }
     );
     const inviteUrl = `${req.protocol}://${req.get('host')}/carriers/carrier-setup?token=${inviteToken}`;
-sendEmail(email, "hello axper", "arachin emailna");
+// sendEmail(email, "hello axper", "arachin emailna");
     // Add a success flash message and redirect to the carrier setup page
     return res.status(200).json({
       flashType: 'success',

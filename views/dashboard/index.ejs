@@ -3,9 +3,7 @@
 <%- include('../modals/inviteModal.ejs') %>
 <div class="container">
     <div id="flash-messages-container"></div>
-
     <h1>Dashboard</h1>
-
 <% if(user.role === 'admin') { %>
     <%- include('agent.ejs') %>
     <%- include('moderator.ejs') %>
@@ -15,6 +13,4 @@
 <% } else if(user.role ===  'agent' )  { %>
     <%- include('agent.ejs') %>
 <% } %>
-
-
 </div>

@@ -1,0 +1,34 @@
+
+<% layout('layoutModal.ejs') %>
+<%- include('../partials/loader.ejs') %>
+        <div class="row"><h5><%=broker.name %> || MC#<%= broker.mcNumber %></h5></div>
+        
+        <div class="row my-3">
+          
+          <!-- LEFT -->
+          <div class="col-md-6 border rounded py-3">
+            <div class="col-md-12">
+              <ul style="list-style-type: none;">
+                <h6 clas="text-muted">Business details</h6>
+                <li>Company Name: <%= broker.name %></li>
+                <li>Company Phone: <%= broker.phone %></li>
+                <li>Company Email: <%= broker.email %></li>
+                <li>DOT: <%= broker.dotNumber %></li>
+                <li>EIN: <%= broker.einNumber %></li>
+                <li>Address: <%= broker.address %></li>
+                <% if(broker.address2) {%> <li>Address2: <%= broker.address2 %></li><% } %>
+                <li>City: <%= broker.city %></li>
+                <li>State: <%= broker.state %></li>
+                <li>Zip: <%= broker.zip %></li>
+              </ul>
+            </div>
+          </div>
+        
+          <!-- RIGHT -->
+          <div class="col-md-6">
+            <h3>Documents</h3>
+            
+          </div>
+
+        
+    

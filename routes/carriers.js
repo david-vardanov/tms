@@ -56,6 +56,7 @@ router.get('/carrier-setup', async (req, res) => {
 router.get("/search", isAuthenticated, async (req, res) => {
   try {
     const { query } = req.query;
+
     if (query && query.length >= 3) {
       const carriers = await Carrier.find({
         $or: [
@@ -143,24 +144,9 @@ router.get('/setup-complete', async (req, res) => {
   
   router.get('/list',isAuthenticated, paginate.middleware(10, 50), async (req, res) => {
     if (req.isAuthenticated()) {
+      const filter = {};
       const { startDate, endDate, isExpired, inModeration } = req.query;
       
-      const filter = {};
-  
-      if (startDate || endDate) {
-        filter.createdAt = {};
-        if (startDate) filter.createdAt.$gte = new Date(startDate);
-        if (endDate) filter.createdAt.$lte = new Date(endDate);
-      }
-  
-      if (isExpired !== undefined) {
-        filter.isExpired = isExpired === 'true';
-      }
-  
-      if (inModeration !== undefined) {
-        filter.status = inModeration === 'true' ? 'inModeration' : { $ne: 'inModeration' };
-      }
-  
       const [carriersResults] = await Promise.all([
         Carrier.find(filter).sort({ updatedAt: 'desc' }).limit(req.query.limit).skip(req.skip).lean().exec(),
       ]);

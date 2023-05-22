@@ -1,0 +1,61 @@
+<% layout('layout.ejs') %>
+
+<div class="container mt-4">
+    <div class="row">
+        <h2>Brokers List</h2>
+        <div class="col-md-3"><a class="btn btn-primary btn-sm mx-1" href="/brokers/new">Create Broker</a></div>
+        <!-- Brokers table -->
+        <div class="row mt-4">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Broker Name</th>
+                <th scope="col">MC Number</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% brokers.forEach(broker => { %>
+                <tr>
+                  <td><%= broker.name %></td>
+                  <td><%= broker.mcNumber %></td>
+                  <td><%= broker.status %></td>
+                  <td>
+                    <div class="row">
+                      <div class="col-md-2">
+                        <button class="btn btn-primary btn-sm view-broker-button" data-id="<%=broker._id %>">Show</button>
+                      </div>
+                      <div class="col-md-2"><% if(user.role==="admin" || user.role==="moderator") { %><a class="btn btn-primary btn-sm mx-1" href="/brokers/<%=broker._id %>/edit"> Edit</a><% } %></div>
+                      <div class="col-md-2">
+                        <% if(user.role==="admin") { %>
+                          <form id="deleteBrokerForm">
+                            <input type="hidden" id="brokerId" value="<%=broker._id %>">
+                            <button type="button" class="btn btn-danger btn-sm btn-delete-broker" data-id="<%= broker._id %>" >Delete</button>
+                          </form>
+                        <% } %>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <% }) %>
+            </tbody>
+          </table>
+        </div>
+    </div>
+  
+  <!-- Pagination -->
+  <div class="row">
+    <div class="col">
+      <nav aria-label="Brokers pagination">
+        <ul class="pagination">
+          <% pagesBrokers.forEach(page => { %>
+            <li class="page-item <%= page.active ? 'active' : '' %>">
+              <a class="page-link" href="?page=<%= page.number %>"><%= page.number %></a>
+            </li>
+          <% }) %>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div> <!-- Close container -->

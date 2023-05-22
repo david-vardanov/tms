@@ -77,6 +77,29 @@ router.route('/logout')
     }
   });
 
+  // Search
+router.get("/search", isAuthenticated, async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (query && query.length >= 3) {
+      const users = await User.find({
+        $or: [
+          { username: { $regex: query, $options: "i" } },
+          { email: { $regex: query, $options: "i" } },
+        ],
+      })
+        .limit(10)
+        .lean();
+
+      res.status(200).json({ success: true, users });
+    } else {
+      res.status(400).json({ success: false, message: "Invalid query" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
 
   router.get('/list',isAuthenticated, paginate.middleware(10, 50), async (req, res) => {
     if (req.isAuthenticated()) {
