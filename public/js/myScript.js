@@ -125,9 +125,9 @@ $(document).ready(function () {
             if (data.carriers.length > 0) { // Check if there are any results
               data.carriers.forEach(function (carrier) {
                 let carrierItem = $('<a>')
-                .addClass('dropdown-item carrier-search-result view-button')
+                .addClass('dropdown-item carrier-search-result view-carrier-button')
                 .attr('href', '#')
-                .data('id', carrier._id) 
+                .attr('data-id', carrier._id) 
                 .text(`${carrier.name} (${carrier.mcNumber})`);
 
                 $searchResults.append(carrierItem); // Update this line
