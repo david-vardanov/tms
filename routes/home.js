@@ -13,8 +13,8 @@ router.get('/', paginate.middleware(10, 50), async (req, res) => {
   if (req.isAuthenticated()) {
     const currentDate = new Date();
     const [invitesResults, carriersResults] = await Promise.all([
-      Invite.find({ expiresAt: { $gte: currentDate } }).sort({ createdAt: 'desc' }).limit(req.query.limit).skip(req.skip).lean().exec(),
-      Carrier.find({ status: 'inModeration' }).sort({ updatedAt: 'desc' }).limit(req.query.limit).skip(req.skip).lean().exec(),
+      Invite.find({ expiresAt: { $gte: currentDate } }).sort({ createdAt: 'desc' }).populate('createdBy').limit(req.query.limit).skip(req.skip).lean().exec(),
+      Carrier.find({ status: 'inModeration' }).sort({ updatedAt: 'desc' }).populate('createdBy').limit(req.query.limit).skip(req.skip).lean().exec(),
     ]);
 
     const [invitesCount, carriersCount] = await Promise.all([

@@ -106,6 +106,37 @@ $('#generate-invite-form').submit((event) => {
   });
 });
 
+
+$(document).ready(function() {
+  var stopIndex = 1;
+
+  $('#addStopButton').on('click', function() {
+      var stopTemplate = $('#stopTemplate').html().replace(/INDEX/g, stopIndex++);  // replace 'INDEX' with the new stopIndex
+      $(stopTemplate).insertBefore($('#addStopButton'));  // insert the new stop form before the Add Stop button
+  });
+
+  // Delegate delete button click event
+  $(document).on('click', '.deleteStopButton', function() {
+      $(this).closest('.card').remove();  // remove the stop form card when the Delete button is clicked
+
+      // Re-index all stops
+      $('.stop.card-body').each(function(i) {
+        if(i !== 0 && i !== $('.stop.card-body').length) {  // Exclude the first and last stops (pick up and delivery)
+          $(this).find('input, select').each(function() {
+            var name = $(this).attr('name');
+            if(name) {
+              name = name.replace(/stops\[\d+\]/, 'stops[' + (i - 1) + ']');  // Adjust the index in the name attribute
+              $(this).attr('name', name);
+            }
+          });
+        }
+      });
+
+      stopIndex--;  // Decrement the stopIndex
+  });
+});
+
+
 $(document).ready(function () {
   let searchTimeout;
   const $searchInput = $("#search-input");

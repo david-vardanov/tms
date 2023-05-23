@@ -33,7 +33,7 @@ router.get('/new', (req, res) => {
 router.post('/', async (req, res) => {
   const newLoad = new Load(req.body);
   await newLoad.save();
-  res.redirect('/list');
+  res.redirect('/loads/list');
 });
 
 // Load Show

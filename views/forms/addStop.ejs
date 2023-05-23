@@ -1,0 +1,58 @@
+<div class="card">
+    <div class="card-header">
+      <p class="card-title"><%= type %></p>
+    </div>
+    <div class="stop card-body">
+      <input type="hidden" name="stops[<%= index %>][stopType]" value="<%= type %>"/>
+
+                    <label for="stops[<%= index %>][orderNumber]">Order Number</label>
+                    <input type="text" name="stops[<%= index %>][orderNumber]" class="form-control" />
+
+                    <label class="form-check-label" for="stops[<%= index %>][appointmentType]">Appointment Type</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="stops[<%= index %>][appointmentType]" name="stops[<%= index %>][appointmentType]" value="FCFS" required>
+                        <label class="form-check-label" for="stops[<%= index %>][appointmentType]">First Come, First Serve (FCFS)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="stops[<%= index %>][appointmentType]" name="stops[<%= index %>][appointmentType]" value="Appointment" required>
+                        <label class="form-check-label" for="stops[<%= index %>][appointmentType]">Appointment</label>
+                    </div>
+
+                    <label for="stops[<%= index %>][date]">Date</label>
+                    <input type="date" name="stops[<%= index %>][date]" class="form-control" />
+
+                    <label for="stops[<%= index %>][time]">Time</label>
+                    <input type="text" name="stops[<%= index %>][time]" class="form-control" />
+
+                    <h5>Dimensions</h5>
+                    <label for="stops[<%= index %>][dimensions][length]">Length</label>
+                    <input type="text" name="stops[<%= index %>][dimensions][length]" class="form-control" />
+                    
+                    <label for="stops[<%= index %>][dimensions][width]">Width</label>
+                    <input type="text" name="stops[<%= index %>][dimensions][width]" class="form-control" />
+
+                    <label for="stops[<%= index %>][dimensions][height]">Height</label>
+                    <input type="text" name="stops[<%= index %>][dimensions][height]" class="form-control" />
+
+                    <label for="stops[<%= index %>][address]">Delivery Address</label>
+                    <input type="text" name="stops[<%= index %>][address]" class="form-control" />
+
+                    <label for="stops[<%= index %>][city]">City</label>
+                    <input type="text" name="stops[<%= index %>][city]" class="form-control" />
+                    
+                    <label for="stops[<%= index %>][state]">State</label>
+                    <input type="text" name="stops[<%= index %>][state]" class="form-control" />
+
+                    <label for="stops[<%= index %>][zip]">Zip</label>
+                    <input type="text" name="stops[<%= index %>][zip]" class="form-control" />
+
+                    <label for="stops[<%= index %>][weight]">Weight</label>
+                    <input type="text" name="stops[<%= index %>][weight]" class="form-control" />
+
+                </div>
+                <% if(index !== 0 && index !== 999) { %> 
+                    <button type="button" class="btn btn-danger btn-sm deleteStopButton">Remove</button>
+                <% } %>
+                
+                
+            </div>

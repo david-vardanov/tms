@@ -20,7 +20,7 @@ const logSchema = new mongoose.Schema({
       type: String,
       default: 'Unknown',
     },
-  });
+  }, { timestamps: true });
 
 const Log = mongoose.model('Log', logSchema);
 

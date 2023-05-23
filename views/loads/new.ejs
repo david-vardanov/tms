@@ -53,6 +53,41 @@
             <input type="text" id="width" name="details[dimensions][width]" placeholder="width" class="form-control">
             <input type="text" id="height" name="details[dimensions][height]" placeholder="height" class="form-control">
         </div>
+
+        <!-- Stops field. Starts with one PickUp stop and one Delivery stop -->
+        <h2>Stops</h2>
+        <div id="stopsContainer">
+            <!-- This is the first (PickUp) stop which can't be removed -->
+            <div class="row">
+                <div class="col-md-6">
+                    <%- include('../forms/addStop.ejs', {index: 0, type: 'PickUp'}) %>
+                </div>
+               
+                <!-- Stop template -->
+                <div id="stopTemplate" style="display: none">
+                    <div class="col-md-6">
+                        <%- include('../forms/addStop.ejs', {index: 'INDEX', type: 'Stop'}) %>
+                    </div>
+                </div>
+                <!-- This is where additional stops will be inserted -->
+                <!-- This is the last (Delivery) stop which can't be removed -->
+                <div class="col-md-6">
+                    <%- include('../forms/addStop.ejs', {index: 999, type: 'Delivery'}) %>
+                </div>
+
+            </div>
+            
+            
+            
+
+            
+            
+        </div>
+
+        <button type="button" id="addStopButton" class="btn btn-secondary">Add Stop</button>
+
+
+
         <div class="form-group">
             <label for="comments">Comments</label>
             <textarea id="comments" name="comments" class="form-control"></textarea>

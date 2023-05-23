@@ -21,7 +21,7 @@ const documentSchema = new Schema({
       return this.type === 'insurance';
     },
   },
-});
+}, { timestamps: true });
 
 const Document = mongoose.model('Document', documentSchema);
 

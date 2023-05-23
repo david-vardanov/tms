@@ -10,6 +10,7 @@
                 <div class="col-md-5">
                   <strong>MC Number:</strong> <%= invite.mcNumber %>
                   <strong>Email:</strong> <%= invite.email %>
+                  <strong>Created By:</strong> <%= invite.createdBy.username %>
                 </div>
                 <div class="col-md-6"> 
                   <div class="row">
@@ -43,27 +44,23 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="col-md-12">
-                    <strong>Status:</strong> <%= carrier.status %>
-                    <strong>Carrier Name:</strong> <%= carrier.name %>
-                    <strong>MC Number:</strong> <%= carrier.mcNumber %>
+                    <p>Status:</strong> <%= carrier.status %></p>
+                    <p>Carrier Name:</strong> <%= carrier.name %></p>
+                    <p>MC Number:</strong> <%= carrier.mcNumber %></p>
+                    <p>Invited By: <%= carrier.createdBy.username %></p>
                   </div>
-                  
-                </div>
-                <div class="col-md-6">
-                 
                 </div>
               </div>
-              <div class="row mt-2">
-                <div class="col-md-6">
-                  <div class="col-md-4">
-                    <button class="btn btn-primary view-button" data-id="<%=carrier._id %>">View</button>
+              <div class="row my-3">
+                  <div class="col-md-2">
+                    <button class="btn btn-primary view-carrier-button" data-id="<%=carrier._id %>">View</button>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-2">
                     <form action="/carriers/<%=carrier._id %>/decline" method="post">
                       <button class="btn btn-danger btn-sm decline-button">Decline</button>
                     </form>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-2">
                     <% if(user.role==="admin") { %>
                       <form id="deleteCarrierForm">
                         <input type="hidden" id="carrierId" value="<%=carrier._id %>">
@@ -71,7 +68,6 @@
                       </form>
                     <% } %>
                   </div>
-                </div>
               </div>
             </div>
           </div>
