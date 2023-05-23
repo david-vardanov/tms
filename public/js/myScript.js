@@ -89,10 +89,32 @@ $('#generate-invite-form').submit((event) => {
     success: (response) => {
       
       const inviteUrl = response.inviteUrl;
-      $('#invite-url-preview').html(`
-        <p>Invitation link:</p>
-        <a href="${inviteUrl}">${inviteUrl}</a> 
-      `);
+      let inviteUrlDisplay = inviteUrl.length > 50 ? inviteUrl.slice(0, 50) + "..." : inviteUrl;
+
+$('#invite-url-preview').html(`
+    <div class="input-group mb-3">
+      <input type="text" id="inviteUrl" class="form-control" value="${inviteUrlDisplay}" readonly>
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" id="copyButton">Copy</button>
+      </div>
+    </div>
+`);
+
+$('#copyButton').on('click', function(){
+  // Create a dummy input to copy the full URL
+  var dummy = document.createElement("input");
+  document.body.appendChild(dummy);
+  // Set its ID
+  dummy.setAttribute("id", "dummy_id");
+  // Output the URL into it
+  document.getElementById("dummy_id").value=inviteUrl;
+  // Select it
+  dummy.select();
+  // Copy its contents
+  document.execCommand("copy");
+  // Remove it as its not needed anymore
+  document.body.removeChild(dummy);
+});
       showFlashMessage(response.flashType, response.message);
     },
     error: (error) => {
