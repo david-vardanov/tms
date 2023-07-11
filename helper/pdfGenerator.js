@@ -87,8 +87,8 @@ function generateBrokerCarrierAgreement(carrier) {
   doc.text(`Signature - Gurgen Grigoryan (Printed name adopted as signature) `);
   doc.moveDown();
   doc.moveDown();
-  doc.text(`Carrier - `);
-  doc.text(`MC# -   `);
+  doc.text(`Carrier - ${carrier.name}`);
+  doc.text(`MC# -   ${carrier.mcNumber}`);
   doc.text(`Address: ${carrier.address}${carrier.address2 ? ` ${carrier.address2}` : ''}, ${carrier.city}, ${carrier.state} ${carrier.zip}`);
   doc.text(`Phone - 2106544547`);
   doc.text(`${carrier.ownerName} - ${carrier.signature} (Printed name adopted as signature)`);
