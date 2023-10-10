@@ -8,22 +8,22 @@ function generateBrokerCarrierAgreement(carrier) {
 
   // Write PDF content
   doc.fontSize(10);
-  doc.text(`Company Name: AGD Logistics LLC`);
-  doc.text(`Address: 323 Sunny Isles Boulevard 7th floor, Sunny Isles Beach, FL, 33160`);
-  doc.text(`Phone: 786.275.5040`);
-  doc.text(`USDOT #: 3419957`);
-  doc.text(`MC #: 1105261`);
-  doc.text(`Federal ID #: 85-0774120`);
-  doc.text(`General: info@agdlogistics.com`);
-  doc.text(`Accounts: account@agdlogistics.com`);
-  doc.text(`Setup: setup@agdlogistics.com`);
+  doc.text(`Company Name:`);
+  doc.text(`Address:`);
+  doc.text(`Phone:`);
+  doc.text(`USDOT #: `);
+  doc.text(`MC #: `);
+  doc.text(`Federal ID #:`);
+  doc.text(`General: `);
+  doc.text(`Accounts:`);
+  doc.text(`Setup: `);
   doc.moveDown();
 
   doc.fontSize(14);
   doc.text(`BROKER - CARRIER AGREEMENT`);
   doc.moveDown();
   doc.fontSize(12);
-  doc.text(`This Agreement shall govern the services provided by ${carrier.name}, a licensed and authorized motor carrier pursuant to Docket No.MC#${carrier.mcNumber} (hereinafter referred to as “Carrier”) and AGD Logistics, LLC., (hereinafter referred to as “Broker”), a licensed property broker pursuant to Docket No. MC# 1105261. Broker and Carrier agree that notwithstanding other provisions, carriage documents or regulation to the contrary, this Agreement shall govern Carrier’s performance and obligations pertaining to transportation services for freight tendered to Carrier hereunder. `);
+  doc.text(`This Agreement shall govern the services provided by ${carrier.name}, a licensed and authorized motor carrier pursuant to Docket No.MC#${carrier.mcNumber} (hereinafter referred to as “Carrier”) and `+ brokerName +`,  (hereinafter referred to as “Broker”), a licensed property broker pursuant to Docket No. MC# 1105261. Broker and Carrier agree that notwithstanding other provisions, carriage documents or regulation to the contrary, this Agreement shall govern Carrier’s performance and obligations pertaining to transportation services for freight tendered to Carrier hereunder. `);
   doc.moveDown();
 
   doc.text(`1. Broker Status. Broker is a freight broker which arranges for third party motor carriers to provide cargo transportation for its customers, in accordance with its role as legally defined under 49 U.S.C. § 13102 Definitions (2), 49 C.F.R. § 371.2 and 49 U.S.C. § 14501(c)(1).`);
@@ -80,17 +80,17 @@ function generateBrokerCarrierAgreement(carrier) {
   doc.moveDown();
   doc.moveDown();
 
-  doc.text(`Broker - AGD LOGISTICS LLC `);
-  doc.text(`Address - 323 Sunny Isles Boulevard 7th floor, Sunny Isles Beach, FL, 33160   `);
-  doc.text(`Phone - 786.275.5040 `);
-  doc.text(`MC# - 1105261 `);
-  doc.text(`Signature - Gurgen Grigoryan (Printed name adopted as signature) `);
+  doc.text(`Broker - ` + brokerName);
+  doc.text(`Address - ` + brokerAddress);
+  doc.text(`Phone - ` + brokerPhone);
+  doc.text(`MC# - ` + brokerMcNumber);
+  doc.text(`Signature - `+ brokerSignature +` (Printed name adopted as signature) `);
   doc.moveDown();
   doc.moveDown();
   doc.text(`Carrier - ${carrier.name}`);
   doc.text(`MC# -   ${carrier.mcNumber}`);
   doc.text(`Address: ${carrier.address}${carrier.address2 ? ` ${carrier.address2}` : ''}, ${carrier.city}, ${carrier.state} ${carrier.zip}`);
-  doc.text(`Phone - 2106544547`);
+  doc.text(`Phone - ${carrier.phone}`);
   doc.text(`${carrier.ownerName} - ${carrier.signature} (Printed name adopted as signature)`);
   doc.text(`Dispatcher name - ${carrier.dispatcherName}`);
   doc.text(`Dispatcher phone - ${carrier.dispatcherPhone}`);
